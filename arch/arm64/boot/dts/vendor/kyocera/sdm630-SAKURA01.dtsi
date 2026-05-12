@@ -1,0 +1,37 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "./module/bsp/gpio/sdm630-SAKURA01-pinctrl.dtsi"
+#include "./module/bsp/blsp/sdm630-SAKURA01-blsp.dtsi"
+#include "./module/fingerprint/sdm630-SAKURA01-fpc.dtsi"
+#include "./module/display/sdm630-SAKURA01-display.dtsi"
+#include "./module/touchscreen/sdm630-SAKURA01-cyttsp5.dtsi"
+#include "./module/lights/sdm630-SAKURA01-lights.dtsi"
+#include "./module/usb/sdm630-SAKURA01-usb.dtsi"
+#include "./module/dtv/sdm630-SAKURA01-dtv.dtsi"
+#include "./module/sensors/sdm630-SAKURA01-sensors.dtsi"
+#include "./module/uart/sdm630-SAKURA01-uart.dtsi"
+#include "./module/audio/sdm630-SAKURA01-audio.dtsi"
+#include "./module/vib/sdm630-SAKURA01-vib.dtsi"
+#include "./module/camera/sdm630-SAKURA01-camera.dtsi"
+#include "./module/irda/sdm630-SAKURA01-irda.dtsi"
+#include "./module/nfc/sony/sdm630-callion-nfc.dtsi"
+#include "./module/pm/gpio/sdm630-SAKURA00-gpio.dtsi"
+#include "./module/pm/charger/sdm630-SAKURA01-charger.dtsi"
+#include "./module/pm/fg/sdm630-SAKURA01-fg.dtsi"
+
+&mtp_batterydata {
+	#include "./module/pm/fg/sdm630-SAKURA01-batterydata-2800mah.dtsi"
+};
+

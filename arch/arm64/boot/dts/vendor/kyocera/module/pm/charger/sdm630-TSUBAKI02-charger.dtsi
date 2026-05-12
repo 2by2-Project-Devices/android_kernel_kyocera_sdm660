@@ -1,0 +1,51 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&spmi_bus {
+	qcom,pm660@0 {
+		qcom,power-on@800 {
+			qcom,s3-debounce = <32>;
+			qcom,pon_1 {
+				qcom,support-reset = <0>;
+			};
+
+			qcom,pon_3 {
+				qcom,pon-type = <3>;
+				qcom,pull-up = <1>;
+				qcom,support-reset = <1>;
+				qcom,s1-timer = <10256>;
+				qcom,s2-timer = <250>;
+				qcom,s2-type = <8>;
+			};
+		};
+		pm660_charger: qcom,qpnp-smb2 {
+			qcom,hvdcp-disable;
+			qcom,otg-cl-ua = <750000>;
+			qcom,otg-ut-uv = <3300000>;
+			qcom,dc-icl-ua = <900000>;
+			qcom,usb-icl-ua = <1425000>;	/* for a plain old DCP */
+			qcom,fcc-max-ua = <1800000>;
+			qcom,fv-max-uv = <4350000>;
+			oem,jeita-cc-comp-ua = <0>;
+			oem,jeita-fv-comp-uv = <247500>;
+			qcom,thermal-mitigation = <3000000 1800000 1600000 1400000 1200000 1000000 800000 600000 400000 200000 0>;
+			qcom,step-charging-enable;
+		};
+	};
+};
+
+/* disable smb1351-charger */
+&i2c_2 {
+	status = "disabled";
+};

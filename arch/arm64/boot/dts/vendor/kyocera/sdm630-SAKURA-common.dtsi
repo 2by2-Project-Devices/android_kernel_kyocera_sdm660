@@ -1,0 +1,33 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "./module/bsp/gpio/sdm630-SAKURA-common-pinctrl.dtsi"
+#include "./module/flashdriver/i2c/sdm630-SAKURA-i2c-pinctrl.dtsi"
+#include "./module/bsp/ram/sdm630-SAKURA-common-ram.dtsi"
+#include "./module/flashdriver/i2c/sdm630-SAKURA-i2c.dtsi"
+#include "./module/keys/sdm630-SAKURA-keys.dtsi"
+#include "./module/uart/sdm630-SAKURA-common-uart.dtsi"
+#include "./module/uart/sdm630-SAKURA-common-uart-pinctrl.dtsi"
+#include "./module/flashdriver/sd/sdm630-SAKURA-pinctrl.dtsi"
+#include "./module/pm/hkadc/sdm630-SAKURA-common-hkadc.dtsi"
+#include "./module/flashdriver/sd/sdm630-SAKURA-sd.dtsi"
+#include "./module/pm/charger/sdm630-SAKURA-common-charger.dtsi"
+#include "./module/audio/sdm630-SAKURA-common-audio.dtsi"
+#include "./module/camera/sdm630-SAKURA-camera-common.dtsi"
+#include "./module/thermal/sdm630-SAKURA-common-thermal.dtsi"
+#include "./module/nfc/sdm630-common-nfc.dtsi"
+#include "./module/flashdriver/emmc/sdm630-SAKURA-common-emmc-pinctrl.dtsi"
+#include "./module/pm/gpio/sdm630-SAKURA-common-gpio.dtsi"
+#include "./module/pm/fg/sdm630-SAKURA-common-fg.dtsi"
+#include "./module/pm/pmic/sdm660-SAKURA-common-pmic.dtsi"

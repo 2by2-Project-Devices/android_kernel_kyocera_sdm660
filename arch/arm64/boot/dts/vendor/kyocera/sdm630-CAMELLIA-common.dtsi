@@ -1,0 +1,22 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "./module/display/sdm630-TSUBAKI02-display.dtsi"
+#include "./module/touchscreen/sdm630-common-tp.dtsi"
+#include "./module/lights/sdm630-TSUBAKI02-lights.dtsi"
+#include "./module/sensors/hall_switch.dtsi"
+#include "./module/audio/sdm630-common-audio.dtsi"
+#include "./module/thermal/sdm630-CAMELLIA-common-thermal.dtsi"
+#include "./module/bsp/ram/sdm630-CAMELLIA-common-ram.dtsi"
+#include "./module/pm/hkadc/sdm630-TSUBAKI02-common-hkadc.dtsi"

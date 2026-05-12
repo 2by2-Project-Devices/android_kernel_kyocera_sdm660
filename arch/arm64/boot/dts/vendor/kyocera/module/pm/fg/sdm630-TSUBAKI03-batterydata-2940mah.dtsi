@@ -1,0 +1,105 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+qcom,sdm630-sakura-batterydata {
+	qcom,max-voltage-uv = <4320000>;
+	oem,batt-care-max-voltage-uv = <4200000>;
+	qcom,fg-cc-cv-threshold-mv = <4310>;
+	oem,fg-cc-cv-cool-threshold-mv = <4190>;
+	oem,fg-cc-cv-warm-threshold-mv = <4190>;
+	oem,fg-cc-cv-batt-care-threshold-mv = <4190>;
+	oem,cycle-count-thresh-first = <200>;
+	oem,cycle-count-thresh-second = <500>;
+	oem,cycle-count-voltage-comp-first-mv = <30>;
+	oem,cycle-count-voltage-comp-second-mv = <60>;
+	oem,cycle-count-cc-cv-comp-first-mv = <30>;
+	oem,cycle-count-cc-cv-comp-second-mv = <60>;
+	oem,cont-chg-thresh-first = <52000>;
+	oem,cont-chg-thresh-second = <104000>;
+	oem,cont-chg-voltage-comp-first-mv = <30>;
+	oem,cont-chg-voltage-comp-second-mv = <60>;
+	oem,cont-chg-cc-cv-comp-first-mv = <30>;
+	oem,cont-chg-cc-cv-comp-second-mv = <60>;
+	oem,cont-chg-factor = <3 4 5 8 11 15 22 32 46>;
+	oem,deterioration-thresh-good = <75>;
+	oem,deterioration-thresh-norm = <50>;
+	oem,deterioration-thresh-normtogood = <85>;
+	oem,deterioration-thresh-deadtonorm = <60>;
+	qcom,fastchg-current-ma = <1500>;
+	qcom,nom-batt-capacity-mah = <2870>;
+	qcom,batt-id-kohm = <100>;
+	qcom,battery-beta = <4050>;
+	qcom,battery-type = "sdm630-sakura-batterydata";
+	qcom,checksum = <0x9849>;
+	qcom,gui-version = "PM660GUI - 0.0.0.45";
+	qcom,fg-profile-data = [
+		 2D 21 6E 04
+		 D4 0A 65 FC
+		 D6 1C 15 FB
+		 A1 05 67 02
+		 58 17 64 23
+		 5C 45 D1 52
+		 A3 00 00 00
+		 14 00 00 00
+		 00 00 7C AB
+		 CA CC 7C C2
+		 21 00 08 00
+		 28 DD 5C E5
+		 76 06 C8 00
+		 26 F3 07 12
+		 48 06 1F 2B
+		 2A 06 09 20
+		 27 00 14 00
+		 D7 1E DC 06
+		 AA 02 59 07
+		 9A 1C 1E 03
+		 F9 15 1E 12
+		 41 18 EC 23
+		 DB 4D 40 5B
+		 65 00 00 00
+		 0E 00 00 00
+		 00 00 F6 D5
+		 BD CD 0D 00
+		 19 00 00 00
+		 5A EB 5C E5
+		 A1 FD 13 F2
+		 D7 F5 0A 0B
+		 2C EA 0B 1A
+		 99 33 CC FF
+		 07 10 00 00
+		 23 0B 1E 45
+		 19 00 40 00
+		 16 02 0A FA
+		 FF 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+	];
+};

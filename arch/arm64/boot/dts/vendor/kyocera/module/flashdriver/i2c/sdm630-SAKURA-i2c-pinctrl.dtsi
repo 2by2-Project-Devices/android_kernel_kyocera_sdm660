@@ -1,0 +1,57 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+&tlmm {
+	i2c_2 {
+
+		i2c_2_gpio: i2c_2_gpio {
+			mux {
+				pins = "gpio6","gpio7";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio6","gpio7";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+	};
+
+	i2c_4 {
+		i2c_4_gpio: i2c_4_gpio {
+			mux {
+				pins = "gpio14","gpio15";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio14","gpio15";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+	};
+
+	i2c_6 {
+	        i2c_6_gpio: i2c_6_gpio {
+       	         mux {
+				pins = "gpio22","gpio23";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio22","gpio23";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+	};
+};

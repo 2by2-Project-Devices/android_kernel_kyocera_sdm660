@@ -1,0 +1,33 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&i2c_6 {
+    /delete-node/ nq@28;
+
+	nfcfelica@28 {
+		compatible = "sony,cxd224x-i2c";
+		status = "ok";
+		reg = <0x28>;
+		sony,nfc_int = <&tlmm 28 0x00>;
+		sony,nfc_rst = <&tlmm 49 0x00>;
+		sony,nfc_wake = <&tlmm 48 0x00>;
+		sony,nfc_rfs = <&tlmm 29 0x00>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <28 2>;  /*1 = low-to-high edge triggered
+								2 = high-to-low edge triggered
+								4 = active high level-sensitive
+								8 = active low level-sensitive */
+		interrupt-names = "nfc_irq";
+	};
+};

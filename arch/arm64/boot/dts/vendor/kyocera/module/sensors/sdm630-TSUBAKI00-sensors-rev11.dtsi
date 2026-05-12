@@ -1,0 +1,52 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+#include "sdm630-TSUBAKI00-sensors.dtsi"
+
+&i2c_6 {
+	rpr0521@38 { /* Ambient light and proximity sensor */
+		interrupts = <70 0x2002>;
+	};
+};
+
+&tlmm {
+	proximity_int_n {
+		proximity_int_n_default: proximity_int_n_default {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+		proximity_int_n_active: proximity_int_n_active {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+		proximity_int_n_suspend: proximity_int_n_suspend {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+	};
+};

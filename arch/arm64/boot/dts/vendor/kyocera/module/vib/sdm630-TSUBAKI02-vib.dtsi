@@ -1,0 +1,52 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+&pm660_haptics {
+	compatible = "qcom,qpnp-haptic";
+	reg = <0xc000 0x100>;
+	interrupts = <0x1 0xc0 0x0 IRQ_TYPE_EDGE_BOTH>,
+		     <0x1 0xc0 0x1 IRQ_TYPE_EDGE_BOTH>;
+	interrupt-names = "sc-irq", "play-irq";
+	qcom,pmic-revid = <&pm660_revid>;
+	qcom,pmic-misc = <&pm660_misc>;
+	qcom,misc-clk-trim-error-reg = <0xf3>;
+	qcom,actuator-type = "erm";
+	qcom,play-mode = "direct";
+	qcom,vmax-mv = <1740>;
+	qcom,ilim-ma = <800>;
+	qcom,wave-shape = "sine";
+	qcom,wave-play-rate-us = <4975>;
+	qcom,int-pwm-freq-khz = <505>;
+	qcom,sc-deb-cycles = <8>;
+	qcom,en-brake;
+	qcom,brake-pattern = [03 03 00 00];
+	qcom,lra-high-z = "opt0";
+	qcom,lra-auto-res-mode = "qwd";
+	qcom,lra-calibrate-at-eop = <0>;
+	qcom,correct-lra-drive-freq;
+	qcom,haptics-vmax-cfg-max = <0x34>;
+	qcom,haptics-vmax-cfg-med = <0x34>;
+	qcom,haptics-vmax-cfg-min = <0x34>;
+	qcom,haptics-rate-cfg1 = <0x00>;
+	qcom,haptics-rate-cfg2 = <0x00>;
+	qcom,haptics-cfg1 = <0x01>;
+	qcom,haptics-cfg2 = <0x01>;
+	qcom,haptics-sel= <0x00>;
+	qcom,haptics-brake = <0x1B>;
+	qcom,haptics-en-ctl2 = <0x13>;
+	qcom,haptics-auto-res-ctrl = <0xAC>;
+	qcom,haptics-auto-res-cfg = <0x8B>;
+	qcom,haptics-zx-cfg = <0x03>;
+};

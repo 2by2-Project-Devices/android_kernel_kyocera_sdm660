@@ -1,0 +1,105 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+qcom,sdm630-sakura-batterydata {
+	/* #3054923_SDM630A1_3100mAh_Jul26th2018*/
+	qcom,max-voltage-uv = <4305000>;
+	qcom,fg-cc-cv-threshold-mv = <4295>;
+	oem,fg-cc-cv-cool-threshold-mv = <4145>;
+	oem,fg-cc-cv-warm-threshold-mv = <4145>;
+	oem,cycle-count-thresh-first = <200>;
+	oem,cycle-count-thresh-second = <500>;
+	oem,cycle-count-voltage-comp-first-mv = <50>;
+	oem,cycle-count-voltage-comp-second-mv = <100>;
+	oem,cycle-count-cc-cv-comp-first-mv = <50>;
+	oem,cycle-count-cc-cv-comp-second-mv = <100>;
+	oem,cont-chg-thresh-first = <52000>;
+	oem,cont-chg-thresh-second = <104000>;
+	oem,cont-chg-voltage-comp-first-mv = <50>;
+	oem,cont-chg-voltage-comp-second-mv = <100>;
+	oem,cont-chg-cc-cv-comp-first-mv = <50>;
+	oem,cont-chg-cc-cv-comp-second-mv = <100>;
+	oem,cont-chg-factor = <3 4 5 8 11 15 22 32 46>;
+	oem,deterioration-thresh-good = <75>;
+	oem,deterioration-thresh-norm = <50>;
+	oem,deterioration-thresh-normtogood = <85>;
+	oem,deterioration-thresh-deadtonorm = <60>;
+	qcom,fastchg-current-ma = <2400>;
+	qcom,nom-batt-capacity-mah = <3100>;
+	qcom,batt-id-kohm = <100>;
+	qcom,battery-beta = <4050>;
+	qcom,battery-type = "sdm630-sakura-batterydata";
+	qcom,checksum = <0x1751>;
+	qcom,gui-version = "PM660GUI - 0.0.0.44";
+	qcom,fg-profile-data = [
+		 1F 25 3B 0C
+		 B7 12 FF 0D
+		 D5 1C 7F 01
+		 B2 05 5E 02
+		 24 17 99 23
+		 1E 45 26 53
+		 B0 00 00 00
+		 13 00 00 00
+		 00 00 62 B3
+		 68 CC 20 BB
+		 1C 00 08 00
+		 61 CC 39 E5
+		 51 FC 75 F3
+		 A7 E2 63 12
+		 11 06 34 33
+		 27 06 09 20
+		 27 00 14 00
+		 47 1F 93 FC
+		 80 03 F3 FD
+		 B4 1C AF 02
+		 C0 0C 48 0B
+		 68 18 33 23
+		 20 45 97 53
+		 70 00 00 00
+		 11 00 00 00
+		 00 00 9D D5
+		 9D BA A4 C2
+		 1A 00 00 00
+		 02 EB 39 E5
+		 A2 06 D4 EB
+		 33 E5 32 0B
+		 C3 FD 09 22
+		 BD 33 CC FF
+		 07 10 00 00
+		 45 0C E1 44
+		 1A 00 40 00
+		 A4 01 0A FA
+		 FF 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+	];
+};

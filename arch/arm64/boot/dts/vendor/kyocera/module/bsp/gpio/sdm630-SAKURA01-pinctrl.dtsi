@@ -1,0 +1,194 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&cam_sensor_mclk0_active {
+	config {
+		drive-strength = <6>; /* 6 MA */
+	};
+};
+
+&cam_sensor_mclk0_suspend {
+	config {
+		drive-strength = <6>; /* 6 MA */
+	};
+};
+
+&cam_sensor_mclk1_active {
+	config {
+		drive-strength = <6>; /* 6 MA */
+	};
+};
+
+&cam_sensor_mclk1_suspend {
+	config {
+		drive-strength = <6>; /* 6 MA */
+	};
+};
+
+&tlmm {
+
+	i2c_4 {
+		i2c_4_default: i2c_4_default {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+
+		i2c_4_active: i2c_4_active {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "blsp_i2c4";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+
+		i2c_4_sleep: i2c_4_sleep {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+
+	usb_hot_info {
+		usb_hot_info_default: usb_hot_info_default {
+			mux {
+				pins = "gpio43";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio43";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		usb_hot_info_active: usb_hot_info_active {
+			mux {
+				pins = "gpio43";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio43";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		usb_hot_info_suspend: usb_hot_info_suspend {
+			mux {
+				pins = "gpio43";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio43";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+	};
+
+	usb_therm_n {
+		usb_therm_n_default: usb_therm_n_default {
+			mux {
+				pins = "gpio68";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio68";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+		usb_therm_n_active: usb_therm_n_active {
+			mux {
+				pins = "gpio68";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio68";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+		usb_therm_n_suspend: usb_therm_n_suspend {
+			mux {
+				pins = "gpio68";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio68";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+	};
+
+	usb_therm_op {
+		usb_therm_op_default: usb_therm_op_default {
+			mux {
+				pins = "gpio69";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio69";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		usb_therm_op_active: usb_therm_op_active {
+			mux {
+				pins = "gpio69";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio69";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		usb_therm_op_suspend: usb_therm_op_suspend {
+			mux {
+				pins = "gpio69";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio69";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+
+};
+

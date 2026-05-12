@@ -1,0 +1,44 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&tlmm {
+	ir_uart_tx_f2 {
+		ir_uart_tx_f2_active: ir_uart_tx_f2_active {
+			mux {
+				pins = "gpio4";
+				function = "blsp_uart2";
+			};
+			config {
+				pins = "gpio4";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+	};
+
+	ir_uart_rx_f2 {
+		ir_uart_rx_f2_active: ir_uart_rx_f2_active {
+			mux {
+				pins = "gpio5";
+				function = "blsp_uart2";
+			};
+			config {
+				pins = "gpio5";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+	};
+};

@@ -1,0 +1,182 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&int_codec {
+	status = "okay";
+	compatible = "qcom,sdm660-asoc-snd";
+	qcom,model = "sdm660-snd-card";
+	qcom,wsa-disable;
+	qcom,wcn-btfm;
+	qcom,mi2s-audio-intf;
+	/delete-property/ qcom,auxpcm-audio-intf;
+	/delete-property/ qcom,ext-disp-audio-rx;
+	qcom,msm-mi2s-master = <1>, <1>, <1>, <1>;
+	qcom,msm-mclk-freq = <9600000>;
+	qcom,msm-mbhc-hphl-swh = <1>;
+	qcom,msm-mbhc-gnd-swh = <1>;
+	qcom,msm-micbias1-ext-cap;
+	/delete-property/ qcom,msm-micbias2-ext-cap;
+	qcom,msm-hs-micbias-type = "internal";
+	/delete-property/ qcom,us-euro-gpios;
+	qcom,cdc-pdm-gpios = <&cdc_pdm_gpios>;
+	qcom,cdc-comp-gpios = <&cdc_comp_gpios>;
+	qcom,cdc-dmic-gpios = <&cdc_dmic_gpios>;
+	qcom,ptt-sw-gpios = <&pm660l_gpios 8 0>;
+	kc,hs-detect-plug-time-ms = <2000>;
+	kc,hs-detect-enable-under-water;
+	kc,btn-low-th  = /bits/ 16 <275 387 537 537 537>;
+	kc,btn-high-th = /bits/ 16 <275 387 537 537 537>;
+
+	qcom,audio-routing =
+		"RX_BIAS", "INT_MCLK0",
+		"SPK_RX_BIAS", "INT_MCLK0",
+		"INT_LDO_H", "INT_MCLK0",
+		"MIC BIAS External", "Handset Mic",
+		"MIC BIAS Internal2", "Headset Mic",
+		"MIC BIAS External", "Secondary Mic",
+		"AMIC2", "MIC BIAS Internal2",
+		"DMIC1", "MIC BIAS External",
+		"MIC BIAS External", "Digital Mic1",
+		"DMIC2", "MIC BIAS External",
+		"MIC BIAS External", "Digital Mic2",
+		"DMIC3", "MIC BIAS External",
+		"MIC BIAS External", "Digital Mic3",
+		"DMIC4", "MIC BIAS External",
+		"MIC BIAS External", "Digital Mic4",
+		"PDM_IN_RX1", "PDM_OUT_RX1",
+		"PDM_IN_RX2", "PDM_OUT_RX2",
+		"PDM_IN_RX3", "PDM_OUT_RX3",
+		"ADC1_IN", "ADC1_OUT",
+		"ADC2_IN", "ADC2_OUT",
+		"ADC3_IN", "ADC3_OUT";
+	asoc-platform = <&pcm0>, <&pcm1>, <&pcm2>, <&voip>, <&voice>,
+			<&loopback>, <&compress>, <&hostless>,
+			<&afe>, <&lsm>, <&routing>, <&compr>,
+			<&pcm_noirq>;
+	asoc-platform-names = "msm-pcm-dsp.0", "msm-pcm-dsp.1",
+			"msm-pcm-dsp.2", "msm-voip-dsp",
+			"msm-pcm-voice", "msm-pcm-loopback",
+			"msm-compress-dsp", "msm-pcm-hostless",
+			"msm-pcm-afe", "msm-lsm-client",
+			"msm-pcm-routing", "msm-compr-dsp",
+			"msm-pcm-dsp-noirq";
+	asoc-cpu = <&dai_dp>, <&dai_mi2s0>,
+			<&dai_mi2s1>,
+			<&dai_mi2s2>, <&dai_mi2s3>,
+			<&dai_int_mi2s0>, <&dai_int_mi2s1>,
+			<&dai_int_mi2s2>, <&dai_int_mi2s3>,
+			<&dai_int_mi2s4>, <&dai_int_mi2s5>,
+			<&dai_pri_auxpcm>, <&dai_sec_auxpcm>,
+			<&dai_tert_auxpcm>, <&dai_quat_auxpcm>,
+			<&afe_pcm_rx>, <&afe_pcm_tx>, <&afe_proxy_rx>,
+			<&afe_proxy_tx>, <&incall_record_rx>,
+			<&incall_record_tx>, <&incall_music_rx>,
+			<&incall_music_2_rx>, <&sb_7_rx>, <&sb_7_tx>,
+			<&sb_8_tx>, <&sb_8_rx>,
+			<&usb_audio_rx>, <&usb_audio_tx>,
+			<&dai_pri_tdm_rx_0>, <&dai_pri_tdm_tx_0>,
+			<&dai_sec_tdm_rx_0>, <&dai_sec_tdm_tx_0>,
+			<&dai_tert_tdm_rx_0>, <&dai_tert_tdm_tx_0>,
+			<&dai_quat_tdm_rx_0>, <&dai_quat_tdm_tx_0>;
+	asoc-cpu-names = "msm-dai-q6-dp.24608", "msm-dai-q6-mi2s.0",
+			"msm-dai-q6-mi2s.1",
+			"msm-dai-q6-mi2s.2", "msm-dai-q6-mi2s.3",
+			"msm-dai-q6-mi2s.7", "msm-dai-q6-mi2s.8",
+			"msm-dai-q6-mi2s.9", "msm-dai-q6-mi2s.10",
+			"msm-dai-q6-mi2s.11", "msm-dai-q6-mi2s.12",
+			"msm-dai-q6-auxpcm.1", "msm-dai-q6-auxpcm.2",
+			"msm-dai-q6-auxpcm.3", "msm-dai-q6-auxpcm.4",
+			"msm-dai-q6-dev.224", "msm-dai-q6-dev.225",
+			"msm-dai-q6-dev.241", "msm-dai-q6-dev.240",
+			"msm-dai-q6-dev.32771", "msm-dai-q6-dev.32772",
+			"msm-dai-q6-dev.32773", "msm-dai-q6-dev.32770",
+			"msm-dai-q6-dev.16398", "msm-dai-q6-dev.16399",
+			"msm-dai-q6-dev.16401", "msm-dai-q6-dev.16400",
+			"msm-dai-q6-dev.28672", "msm-dai-q6-dev.28673",
+			"msm-dai-q6-tdm.36864", "msm-dai-q6-tdm.36865",
+			"msm-dai-q6-tdm.36880", "msm-dai-q6-tdm.36881",
+			"msm-dai-q6-tdm.36896", "msm-dai-q6-tdm.36897",
+			"msm-dai-q6-tdm.36912", "msm-dai-q6-tdm.36913";
+	asoc-codec = <&stub_codec>, <&msm_digital_codec>,
+			<&pmic_analog_codec>;
+	asoc-codec-names = "msm-stub-codec.1", "msm-dig-codec",
+				"analog-codec";
+	/delete-property/ qcom,wsa-max-devs;
+	/delete-property/ qcom,wsa-devs;
+	/delete-property/ qcom,wsa-aux-dev-prefix;
+};
+
+&soc {
+	lpi_tlmm: lpi_pinctrl@15070000 {
+		cdc_dmic12_gpios_active: dmic12_gpios_active {
+			mux {
+				pins = "gpio26", "gpio28";
+				function = "func1";
+			};
+
+			config {
+				pins = "gpio26", "gpio28";
+				drive-strength = <2>;
+				output-high;
+			};
+		};
+
+		cdc_dmic12_gpios_sleep: dmic12_gpios_sleep {
+			mux {
+				pins = "gpio26", "gpio28";
+				function = "func1";
+			};
+
+			config {
+				pins = "gpio26", "gpio28";
+				drive-strength = <2>;
+				/delete-property/ bias-disable;
+				/delete-property/ output-low;
+				bias-pull-down;
+				input-enable;
+			};
+		};
+
+		cdc_dmic34_gpios_active: dmic34_gpios_active {
+			mux {
+				pins = "gpio27", "gpio29";
+				function = "func1";
+			};
+
+			config {
+				pins = "gpio27", "gpio29";
+				drive-strength = <2>;
+				input-enable;
+			};
+		};
+
+		cdc_dmic34_gpios_sleep: dmic34_gpios_sleep {
+			mux {
+				pins = "gpio27", "gpio29";
+				function = "func1";
+			};
+
+			config {
+				pins = "gpio27", "gpio29";
+				drive-strength = <2>;
+				bias-pull-down;
+				input-enable;
+			};
+		};
+	};
+};
+
+&pmic_analog_codec {
+        kc,spkr-drv-bit0-gain = <0>;
+};

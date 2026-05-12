@@ -1,0 +1,96 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ */
+
+#include "sdm630-common-sensors.dtsi"
+&soc {
+	/delete-node/ sensor_power;
+};
+
+&spi_1 {
+	status = "ok";
+	/delete-node/ sensor_micon;
+	qlspi_eoss3@0 {
+		/delete-property/ pinctrl-names;
+		pinctrl-names = "sensor_micon_default", "sensor_micon_active", "sensor_micon_sleep",
+						"sensor_micon_spi_cs_active", "sensor_micon_spi_cs_suspend", "sensor_micon_spi_cs_reset",
+						"sensor_micon_rst_active", "sensor_micon_rst_suspend",
+						"sensor_micon_vmicon_11_active","sensor_micon_vmicon_11_suspend",
+						"sensor_micon_vmicon_18_active","sensor_micon_vmicon_18_suspend";
+		pinctrl-0 = <&micon_int_n_default &micon_int_out_default &micon_rst_n_default>;
+		pinctrl-1 = <&micon_int_n_active &micon_int_out_active &micon_rst_n_active>;
+		pinctrl-2 = <&micon_int_n_suspend &micon_int_out_suspend &micon_rst_n_suspend>;
+		pinctrl-3 = <&sensor_micon_spi_cs_active>;
+		pinctrl-4 = <&sensor_micon_spi_cs_suspend>;
+		pinctrl-5 = <&sensor_micon_spi_cs_reset>;
+		pinctrl-6 = <&sensor_micon_rst_active>;
+		pinctrl-7 = <&sensor_micon_rst_suspend>;
+		pinctrl-8 = <&sensor_micon_vmicon_11_active>;
+		pinctrl-9 = <&sensor_micon_vmicon_11_suspend>;
+		/delete-property/ pinctrl-10;
+		pinctrl-10 = <&sensor_micon_vmicon_18_active>;
+		/delete-property/ pinctrl-11;
+		pinctrl-11 = <&sensor_micon_vmicon_18_suspend>;
+		/delete-property/ vmicon_18-supply;
+		vsensor_18-supply = <&pm660_l14>;
+		vmicon_18 {
+			ctrl = <1>; /* 1:pinctrl, 2:pm ldo, 3:pm gpio*/
+			gpio = <&tlmm 77 0>;
+		};
+		vsensor_18 {
+			ctrl = <2>; /* 1:pinctrl, 2:pm ldo, 3:pm gpio*/
+			voltage-min = <1800000>;
+			voltage-max = <1800000>;
+			load = <50000>;
+		};
+	};
+};
+
+&i2c_6 {
+	status = "ok";
+	rpr0521@38 { /* Ambient light and proximity sensor */
+		status = "ok";
+	};
+};
+
+&tlmm {
+	/delete-node/ sensor_micon_vsensor_18;
+	sensor_micon_vmicon_18 {
+		sensor_micon_vmicon_18_active: sensor_micon_vmicon_18_active {
+			mux {
+				pins = "gpio77";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio77";
+				device-strength = <2>;
+				output-high;
+				bias-disable;
+			};
+		};
+		sensor_micon_vmicon_18_suspend: sensor_micon_vmicon_18_suspend {
+			mux {
+				pins = "gpio77";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio77";
+				device-strength = <2>;
+				output-low;
+				bias-disable;
+			};
+		};
+	};
+};

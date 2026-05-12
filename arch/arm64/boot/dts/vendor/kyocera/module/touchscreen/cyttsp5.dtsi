@@ -1,0 +1,105 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+//&soc {
+//	i2c@c178000 {
+
+&i2c_4 {
+	status = "ok";
+
+		clock-frequency = <350000>;
+
+		tsc@24 {
+			compatible = "cy,cyttsp5_i2c_adapter";
+			reg = <0x24>;
+			interrupt-parent = <&tlmm>;
+			interrupts = <67 0x2008>;
+			cy,adapter_id = "cyttsp5_i2c_adapter";
+
+//			vdd-supply = <&vph_pwr_vreg>;
+			pinctrl-names = "pmx_ts_active","pmx_ts_suspend";
+			pinctrl-0 = <&tp_int_act>;
+			pinctrl-1 = <&tp_int_sus>;
+
+			cy,core {
+				cy,name = "cyttsp5_core";
+
+				cy,irq_gpio = <&tlmm 67 0x2008>;
+				cy,rst_gpio = <&tlmm 66 0x0>;
+				cy,vccd_gpio = <&tlmm 61 0x0>;  //VMIPI
+				cy,vdda_gpio = <&tlmm 64 0x0>;
+
+				cy,hid_desc_register = <1>;
+				cy,flags = <5>;
+				cy,easy_wakeup_gesture = <0>;
+				cy,glove_valid = <0>;
+				cy,fw_type = <1>;
+
+				cy,mt {
+					cy,name = "cyttsp5_mt";
+					cy,inp_dev_name = "cyttsp5_mt";
+					cy,flags = <0x80>;
+					cy,abs =
+						<0x35 0 960 0 0
+						0x36 0 540 0 0
+						0x3a 0 250 0 0
+						0xffff 0 255 0 0
+						0x39 0 15 0 0
+						0x30 0 20 0 0
+						0x31 0 20 0 0
+						0x34 0xffffff81 127 0 0
+						0x19 0 255 0 0>;
+				};
+			};
+		};
+//	};
+};
+
+&tlmm {
+	tp_int_n {
+		tp_int_n_default: tp_int_n_default {
+			mux {
+				pins = "gpio67";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio67";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		tp_int_act: tp_int_act {
+			mux {
+				pins = "gpio67";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio67";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+		tp_int_sus: tp_int_sus {
+			mux {
+				pins = "gpio67";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio67";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+};

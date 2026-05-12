@@ -1,0 +1,154 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pm660_gpios {
+	/* GPIO 2 (SENS_SLEEP_CLK) */
+	gpio@c100 {
+		qcom,mode = <1>;			/* QPNP_PIN_MODE_DIG_OUT */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <5>;			/* QPNP_PIN_PULL_NO */
+		qcom,invert = <0>;			/* QPNP_PIN_INVERT_DISABLE */
+		qcom,src-sel = <2>;			/* QPNP_PIN_SEL_FUNC_1 */
+		qcom,output-type = <0>;		/* QPNP_PIN_OUT_BUF_CMOS */
+		qcom,out-strength = <1>;	/* QPNP_PIN_OUT_STRENGTH_LOW */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 3 (N/C) */
+	gpio@c200 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 4 (CLK_REQ) */
+	gpio@c300 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <1>;			/* QPNP_PIN_VIN1 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 6 (PMK_SLEEP_CLK) */
+	gpio@c500 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 10 (WCSS_PWR_REQ) */
+	gpio@c900 {
+		status = "disabled";		/* Disable */
+	};
+	/* GPIO 11 (N/C) */
+	gpio@ca00 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 12 (WATER_INFO) */
+	gpio@cb00 {
+		qcom,mode = <1>;			/* QPNP_PIN_MODE_DIG_OUT */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,invert = <0>;			/* QPNP_PIN_INVERT_DISABLE */
+		qcom,src-sel = <0>;			/* QPNP_PIN_SEL_FUNC_CONSTANT */
+		qcom,out-strength = <1>;	/* QPNP_PIN_OUT_STRENGTH_LOW */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 13 (USB_HOT_INFO) */
+	gpio@cc00 {
+		qcom,mode = <1>;			/* QPNP_PIN_MODE_DIG_OUT */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,invert = <0>;			/* QPNP_PIN_INVERT_DISABLE */
+		qcom,src-sel = <0>;			/* QPNP_PIN_SEL_FUNC_CONSTANT */
+		qcom,out-strength = <1>;	/* QPNP_PIN_OUT_STRENGTH_LOW */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+};
+
+&pm660l_gpios {
+	/* GPIO 1 (N/C) */
+	gpio@c000 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 3 (INCAM_DVDD_1P2_EN) */
+	gpio@c200 {
+		qcom,mode = <1>;			/* QPNP_PIN_MODE_DIG_OUT */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <5>;			/* QPNP_PIN_PULL_NO */
+		qcom,invert = <0>;			/* QPNP_PIN_INVERT_DISABLE */
+		qcom,src-sel = <0>;			/* QPNP_PIN_SEL_FUNC_CONSTANT */
+		qcom,output-type = <0>;		/* QPNP_PIN_OUT_BUF_CMOS */
+		qcom,out-strength = <1>;	/* QPNP_PIN_OUT_STRENGTH_LOW */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 4 (CAMERA_KEY_N) */
+	gpio@c300 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <0>;			/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 5 (PTT_KEY_N) */
+	gpio@c400 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <0>;			/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 6 (NFC_RECOVERY_MODE) */
+	gpio@c500 {
+		qcom,mode = <1>;			/* QPNP_PIN_MODE_DIG_OUT */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <5>;			/* QPNP_PIN_PULL_NO */
+		qcom,invert = <0>;			/* QPNP_PIN_INVERT_DISABLE */
+		qcom,src-sel = <0>;			/* QPNP_PIN_SEL_FUNC_CONSTANT */
+		qcom,output-type = <0>;		/* QPNP_PIN_OUT_BUF_CMOS */
+		qcom,out-strength = <1>;	/* QPNP_PIN_OUT_STRENGTH_LOW */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 7 (VOL_DOWM_KEY_N) */
+	gpio@c600 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <1>;			/* QPNP_PIN_VIN1 */
+		qcom,pull = <0>;			/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 8 (N/C) */
+	gpio@c700 {
+		qcom,mode = <0>;			/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;			/* QPNP_PIN_VIN0 */
+		qcom,pull = <4>;			/* QPNP_PIN_PULL_DN */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+};
+

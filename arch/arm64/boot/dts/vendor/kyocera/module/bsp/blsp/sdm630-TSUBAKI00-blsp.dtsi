@@ -1,0 +1,227 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&tlmm {
+	i2c_4 {
+		i2c_4_default: i2c_4_default {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+
+		i2c_4_active: i2c_4_active {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "blsp_i2c4";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+
+		i2c_4_sleep: i2c_4_sleep {
+			mux {
+				pins = "gpio14", "gpio15";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio14", "gpio15";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+
+	spi_micon_mosi {
+		spi_micon_mosi_default: spi_micon_mosi_default {
+			mux {
+				pins = "gpio0";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio0";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		spi_micon_mosi_active: spi_micon_mosi_active {
+			mux {
+				pins = "gpio0";
+				function = "blsp_spi1";
+			};
+			config {
+				pins = "gpio0";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		spi_micon_mosi_suspend: spi_micon_mosi_suspend {
+			mux {
+				pins = "gpio0";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio0";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+	};
+
+
+	spi_micon_miso {
+		spi_micon_miso_default: spi_micon_miso_default {
+			mux {
+				pins = "gpio1";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio1";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		spi_micon_miso_active: spi_micon_miso_active {
+			mux {
+				pins = "gpio1";
+				function = "blsp_spi1";
+			};
+			config {
+				pins = "gpio1";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		spi_micon_miso_suspend: spi_micon_miso_suspend {
+			mux {
+				pins = "gpio1";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio1";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+
+	/delete-node/ spi_micon_cs;
+	spi_micon_cs {
+		spi_micon_cs_default: spi_micon_cs_default {
+			mux {
+				pins = "gpio2";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio2";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		spi_micon_cs_active: spi_micon_cs_active {
+			mux {
+				pins = "gpio2";
+				function = "blsp_spi1";
+			};
+			config {
+				pins = "gpio2";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		spi_micon_cs_suspend: spi_micon_cs_suspend {
+			mux {
+				pins = "gpio2";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio2";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+	};
+
+
+	spi_micon_clk {
+		spi_micon_clk_default: spi_micon_clk_default {
+			mux {
+				pins = "gpio3";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio3";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		spi_micon_clk_active: spi_micon_clk_active {
+			mux {
+				pins = "gpio3";
+				function = "blsp_spi1";
+			};
+			config {
+				pins = "gpio3";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		spi_micon_clk_suspend: spi_micon_clk_suspend {
+			mux {
+				pins = "gpio3";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio3";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+	};
+};
+
+&i2c_4 {
+	pinctrl-names = "i2c_active", "i2c_sleep", "i2c_default";
+	pinctrl-0 = <&i2c_4_active>;
+	pinctrl-1 = <&i2c_4_sleep>;
+	pinctrl-2 = <&i2c_4_default>;
+};
+
+&spi_1 {
+	pinctrl-0 = <&spi_micon_mosi_active
+	             &spi_micon_miso_active
+	             &spi_micon_cs_active
+	             &spi_micon_clk_active>;
+	pinctrl-1 = <&spi_micon_mosi_suspend
+	             &spi_micon_miso_suspend
+	             &spi_micon_cs_suspend
+	             &spi_micon_clk_suspend>;
+};

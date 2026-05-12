@@ -1,0 +1,93 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+#include "sdm630-common-sensors.dtsi"
+
+&spi_1 {
+	status = "ok";
+	sensor_micon {
+		status = "ok";
+		LAPIS,rst-gpio = <&tlmm 62 0>;
+		LAPIS,int-gpio = <&tlmm 13 0>;
+		micon-acc-conv_axis = /bits/ 8 <0>;
+		micon-gyro-conv_axis = /bits/ 8 <0>;
+		micon-mag-conv_axis = /bits/ 8 <0>;
+		micon-mag-static_matrix = <0x25DA 0xFDC6 0x0082 0xFD8A 0x2558 0x0000 0xFFE2 0x0032 0x27E2>; /* 9690 -570 130 -630 9560 0 -30 50 10210 */
+	};
+};
+
+&i2c_8 {
+	status = "ok";
+	ltr559@23 { /* Ambient light and proximity sensor */
+		status = "ok";
+	};
+};
+
+&tlmm {
+	micon_rst_n {
+		micon_rst_n_default: micon_rst_n_default {
+			mux {
+				pins = "gpio62";
+			};
+			config {
+				pins = "gpio62";
+			};
+		};
+		micon_rst_n_active: micon_rst_n_active {
+			mux {
+				pins = "gpio62";
+			};
+			config {
+				pins = "gpio62";
+			};
+		};
+		micon_rst_n_suspend: micon_rst_n_suspend {
+			mux {
+				pins = "gpio62";
+			};
+			config {
+				pins = "gpio62";
+			};
+		};
+	};
+
+	micon_int_n {
+		micon_int_n_default: micon_int_n_default {
+			mux {
+				pins = "gpio13";
+			};
+			config {
+				pins = "gpio13";
+			};
+		};
+		micon_int_n_active: micon_int_n_active {
+			mux {
+				pins = "gpio13";
+			};
+			config {
+				pins = "gpio13";
+			};
+		};
+		micon_int_n_suspend: micon_int_n_suspend {
+			mux {
+				pins = "gpio13";
+			};
+			config {
+				pins = "gpio13";
+			};
+		};
+	};
+};

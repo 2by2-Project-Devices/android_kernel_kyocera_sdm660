@@ -1,0 +1,77 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+&spmi_bus {
+	pm660l_3: qcom,pm660l@3 {
+		pm660l_wled: qcom,leds@d800 {
+			linux,name = "lcd-backlight";
+			/delete-property/ qcom,auto-calibration-enable;
+		};
+
+		pm660l_pwm_3: pwm@b300 {
+			/delete-property/ qcom,period;
+			/delete-node/ qcom,lpg;
+		};
+
+		qcom,leds@d000 {
+			compatible = "leds-tricolor";
+			device-name = "leds-ledlight";
+			red_led: qcom,rgb_0 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 19];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <128>;
+			};
+
+			green_led: qcom,rgb_1 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 26];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <192>;
+			};
+
+			blue_led: qcom,rgb_2 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 19];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <128>;
+			};
+		};
+	};
+};
+
+&pm660l_wled {
+	qcom,led-strings-list = [00 01 02];
+	qcom,fs-curr-ua = <20000>;
+	qcom,en-cabc;
+};
+
+&blue_led {
+	kc,led-disable;
+};
+

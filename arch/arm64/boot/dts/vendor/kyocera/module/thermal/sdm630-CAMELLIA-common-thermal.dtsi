@@ -1,0 +1,48 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&soc {
+	qcom,sensor-information {
+
+		sensor_information15: qcom,sensor-information-15 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "pa_therm";
+		};
+		sensor_information16: qcom,sensor-information-16 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "outcam_therm";
+		};
+		sensor_information17: qcom,sensor-information-17 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "incam_therm";
+		};
+		sensor_information20: qcom,sensor-information-20 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "lcd_therm";
+		};
+		sensor_information21: qcom,sensor-information-21 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "xo_therm_oem";
+		};
+		sensor_information22: qcom,sensor-information-22 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "fp_therm";
+		};
+		sensor_information23: qcom,sensor-information-23 {
+			qcom,sensor-type =  "adc";
+			qcom,sensor-name = "battery";
+			qcom,scaling-factor = <1000>;
+		};
+	};
+};

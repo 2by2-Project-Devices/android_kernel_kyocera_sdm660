@@ -1,0 +1,37 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pm660_fg {
+	qcom,battery-thermal-coefficients = [c7 50 ff];
+
+	qcom,fg-jeita-hyst-temp = <2>;
+	qcom,fg-jeita-thresholds = <3 13 42 53>;
+
+	qcom,fg-cutoff-voltage = <3400>;
+	qcom,fg-empty-voltage = <3100>;
+
+	qcom,fg-chg-term-current = <150>;
+	qcom,fg-sys-term-current = <150>;
+	qcom,fg-chg-term-base-current = <150>;
+	qcom,hold-soc-while-full;
+
+	/delete-property/ qcom,fg-auto-recharge-soc;
+	qcom,fg-recharge-soc-thr = <95>;
+	qcom,fg-recharge-voltage = <4150>;
+
+	oem,fg-cutoff-voltage-lowtemp = <3100>;
+	oem,fg-empty-voltage-lowtemp = <2900>;
+	oem_fg_tps_en_nbyp-gpio = <&tlmm 24 0x00>;
+};
+

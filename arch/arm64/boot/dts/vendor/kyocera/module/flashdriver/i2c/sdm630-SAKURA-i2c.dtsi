@@ -1,0 +1,55 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+&i2c_1 {
+	status = "disabled";
+};
+
+&i2c_2 {
+	qcom,clk-freq-out = <350000>;
+	pinctrl-names = "i2c_active", "i2c_sleep", "i2c_gpio";
+	pinctrl-2 = <&i2c_2_gpio>;
+	status = "ok";
+};
+
+&i2c_3 {
+	status = "disabled";
+};
+
+&i2c_4 {
+	qcom,clk-freq-out = <350000>;
+	pinctrl-names = "i2c_active", "i2c_sleep", "i2c_default", "i2c_gpio";
+	pinctrl-3 = <&i2c_4_gpio>;
+	status = "ok";
+};
+
+&i2c_5 {
+	status = "disabled";
+};
+
+&i2c_6 {
+	qcom,clk-freq-out = <350000>;
+	pinctrl-names = "i2c_active", "i2c_sleep", "i2c_gpio";
+	pinctrl-2 = <&i2c_6_gpio>;
+	status = "ok";
+};
+
+&i2c_7 {
+	status = "disabled";
+};
+
+&i2c_8 {
+	status = "disabled";
+};

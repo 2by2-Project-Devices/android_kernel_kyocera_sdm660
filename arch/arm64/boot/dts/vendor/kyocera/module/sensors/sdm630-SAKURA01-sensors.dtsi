@@ -1,0 +1,66 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+#include "sdm630-common-sensors.dtsi"
+
+&spi_1 {
+	status = "ok";
+	sensor_micon {
+		status = "ok";
+		reg = <1>;
+		micon-acc-conv_axis = /bits/ 8 <1>;
+		micon-gyro-conv_axis = /bits/ 8 <1>;
+		micon-mag-conv_axis = /bits/ 8 <0>;
+		micon-mag-static_matrix = <0x24C2 0x0352 0xFF92 0x065E 0x2526 0xFE7A 0x02D0 0xFE48 0x29AE>; /* 9410, 850, -110, 1630, 9510, -390, 720, -440, 10670 */
+	};
+};
+
+&i2c_6 {
+	status = "ok";
+	rpr0521@38 { /* Ambient light and proximity sensor */
+		status = "ok";
+		interrupts = <70 0x2002>;
+	};
+};
+
+&tlmm {
+	proximity_int_n {
+		proximity_int_n_default: proximity_int_n_default {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+		proximity_int_n_active: proximity_int_n_active {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+		proximity_int_n_suspend: proximity_int_n_suspend {
+			mux {
+				pins = "gpio70";
+			};
+			config {
+				pins = "gpio70";
+			};
+		};
+	};
+};

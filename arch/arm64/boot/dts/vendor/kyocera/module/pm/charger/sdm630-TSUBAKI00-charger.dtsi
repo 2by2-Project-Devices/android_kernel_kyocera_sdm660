@@ -1,0 +1,25 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pm660_charger {
+	qcom,usb-icl-ua = <1425000>;	/* for a plain old DCP */
+	qcom,fcc-max-ua = <2400000>;
+	qcom,fv-max-uv = <4305000>;
+	oem,jeita-cc-comp-ua = <0>;
+	oem,jeita-fv-comp-uv = <150000>;
+	qcom,thermal-mitigation = <3000000 2200000 2000000 1800000 1600000 1400000 1200000 1000000 800000 600000 400000 200000 0>;
+	qcom,step-charging-enable;
+
+	/delete-property/ qcom,hvdcp-disable;
+};

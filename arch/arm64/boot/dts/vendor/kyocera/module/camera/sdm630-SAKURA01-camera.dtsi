@@ -1,0 +1,29 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "sdm630-deletenode.dtsi"
+#include "sdm630-ov13855-out.dtsi"
+#include "sdm630-ov8856-in.dtsi"
+
+&soc {
+
+kc,cam-conf {
+		compatible = "kc,cam-conf";
+		conf-count = <2>;
+		conf-names = "camera_config_ov13855_out.xml",
+			     "camera_config_ov8856_in.xml";
+		sensor-names = "ov13855", "ov8856";
+		cam-types = <0 1>;
+			};
+};

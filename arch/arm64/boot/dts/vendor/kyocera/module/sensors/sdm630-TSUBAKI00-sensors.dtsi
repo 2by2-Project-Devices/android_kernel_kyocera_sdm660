@@ -1,0 +1,35 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+#include "sdm630-common-sensors.dtsi"
+
+&spi_1 {
+	status = "ok";
+	sensor_micon {
+		status = "ok";
+		micon-acc-conv_axis = /bits/ 8 <1>;
+		micon-gyro-conv_axis = /bits/ 8 <1>;
+		micon-mag-conv_axis = /bits/ 8 <1>;
+		micon-mag-static_matrix = <0x2602 0x01FE 0x014A 0x0258 0x24E0 0xFF9C 0xFFEC 0xFFB0 0x27EC>; /* 9730 510 330 600 9440 -100 -20 -80 10220 */
+	};
+};
+
+&i2c_6 {
+	status = "ok";
+	rpr0521@38 { /* Ambient light and proximity sensor */
+		status = "ok";
+	};
+};

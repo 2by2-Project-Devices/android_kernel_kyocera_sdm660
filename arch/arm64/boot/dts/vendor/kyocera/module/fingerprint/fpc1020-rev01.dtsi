@@ -1,0 +1,36 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+/*
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "fpc1020.dtsi"
+
+&soc {
+	fpc1020 {
+		pinctrl-names = "fpc1020_reset_reset",
+			"fpc1020_reset_active",
+			"fpc1020_irq_active",
+			"fpc1020_pwr_off",
+			"fpc1020_pwr_on";
+
+		/delete-property/ pinctrl-5;
+
+		kc,enable-navi = <1>; /* 0:off, 1:on, 2:lcd */
+		kc,enable-navi-hold = <1>;
+		kc,enable-thermal-monitor = <1>;
+		kc,enable-drop-det = <0>;
+		/delete-property/ kc,gpio_drop_irq;
+	};
+};

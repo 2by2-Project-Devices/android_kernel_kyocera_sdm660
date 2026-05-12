@@ -1,0 +1,57 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pm660_vadc {
+	/delete-node/ chan@50;
+
+	chan@10 {
+		label = "inundation";
+		reg = <0x10>;
+		qcom,decimation = <2>;
+		qcom,pre-div-channel-scaling = <0>;
+		qcom,calibration-type = "ratiometric";
+		qcom,scale-function = <0>;
+		qcom,hw-settle-time = <2>;
+		qcom,fast-avg-setup = <0>;
+		qcom,vadc-thermal-node;
+	};
+};
+
+&spmi_bus {
+	qcom,pm660@0 {
+		oem_hkadc {
+			compatible = "oem_hkadc-driver";
+			qcom,oem-hkadc-vadc = <&pm660_vadc>;
+			oem,monitor-time-ms = <5000>;
+			oem,resume-mon-time-ms = <1000>;
+			oem,fp-therm-diasble;
+		};
+	};
+};
+
+&soc {
+	oem_hkadc_usb_tm_monitor {
+		compatible = "kc,oem_hkadc_usb_tm-driver";
+		oem_hkadc_usb_tm-gpio = <&tlmm 25 0x00>;
+	};
+
+	oem_hkadc_inundation_monitor {
+		compatible = "kc,oem_hkadc_inundation-driver";
+		oem_hkadc_inundation_detect-gpio = <&tlmm 21 0x00>;
+	};
+};
+
+&pm660_charger {
+	oem,vbus-short-enable;
+};

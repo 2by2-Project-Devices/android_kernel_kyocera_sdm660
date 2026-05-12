@@ -1,0 +1,88 @@
+/* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+#include "dsi-panel-hx83112-jdi-video.dtsi"
+
+&soc {
+	dsi_panel_pwr_supply: dsi_panel_pwr_supply {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		qcom,panel-supply-entry@0 {
+			reg = <0>;
+			qcom,supply-name = "wqhd-vddio";
+			qcom,supply-min-voltage = <1800000>;
+			qcom,supply-max-voltage = <1950000>;
+			qcom,supply-enable-load = <32000>;
+			qcom,supply-disable-load = <80>;
+			qcom,supply-pre-off-sleep = <5>;
+		};
+
+		qcom,panel-supply-entry@1 {
+			reg = <1>;
+			qcom,supply-name = "lab";
+			qcom,supply-min-voltage = <4600000>;
+			qcom,supply-max-voltage = <6000000>;
+			qcom,supply-enable-load = <100000>;
+			qcom,supply-disable-load = <100>;
+			qcom,supply-pre-off-sleep = <6>;
+			qcom,supply-post-off-sleep = <6>;
+		};
+
+		qcom,panel-supply-entry@2 {
+			reg = <2>;
+			qcom,supply-name = "ibb";
+			qcom,supply-min-voltage = <4600000>;
+			qcom,supply-max-voltage = <6000000>;
+			qcom,supply-enable-load = <100000>;
+			qcom,supply-disable-load = <100>;
+			qcom,supply-post-on-sleep = <10>;
+			qcom,supply-pre-off-sleep = <4>;
+		};
+	};
+};
+
+&mdss_dsi0 {
+        qcom,dsi-pref-prim-pan = <&dsi_hx83112_jdi_video>;
+        pinctrl-names = "mdss_default", "mdss_sleep";
+        pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+        pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+        qcom,platform-reset-gpio = <&tlmm 53 0>;
+        qcom,touchscreen-reset-gpio = <&tlmm 66 0>;
+        qcom,platform-te-gpio = <&tlmm 59 0>;
+};
+
+&spmi_bus {
+	pm660l_3: qcom,pm660l@3 {
+		pm660l_lcdb: qpnp-lcdb@ec00 {
+			lcdb_ldo_vreg: ldo {
+				regulator-min-microvolt = <5500000>;
+				regulator-max-microvolt = <5500000>;
+			};
+
+			lcdb_ncp_vreg: ncp {
+				regulator-min-microvolt = <5500000>;
+				regulator-max-microvolt = <5500000>;
+			};
+		};
+	};
+};
+
+&dsi_hx83112_jdi_video {
+        qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+};
+
+/delete-node/ &dsi_nt35695b_truly_fhd_video;

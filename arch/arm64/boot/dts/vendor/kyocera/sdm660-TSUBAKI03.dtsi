@@ -1,0 +1,33 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2019 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+#include "./module/usb/sdm660-TSUBAKI03-usb.dtsi"
+#include "./module/audio/sdm630-TSUBAKI03-audio.dtsi"
+#include "./module/display/sdm630-TSUBAKI03-display.dtsi"
+#include "./module/lights/sdm630-TSUBAKI03-lights.dtsi"
+#include "./module/touchscreen/sdm630-TSUBAKI03-cyttsp5.dtsi"
+#include "./module/keys/sdm630-TSUBAKI03-keys.dtsi"
+#include "./module/bsp/blsp/sdm630-TSUBAKI03-blsp.dtsi"
+#include "./module/vib/sdm630-TSUBAKI03-vib.dtsi"
+#include "./module/thermal/sdm660-TSUBAKI03-thermal.dtsi"
+#include "./module/flashdriver/sd/sdm660-TSUBAKI03-sd.dtsi"
+#include "./module/product_img/sdm660-TSUBAKI03-product-img.dtsi"
+#include "./module/pm/charger/sdm630-TSUBAKI03-charger.dtsi"
+#include "./module/pm/fg/sdm630-TSUBAKI03-fg.dtsi"
+#include "./module/pm/gpio/sdm630-TSUBAKI03-gpio.dtsi"
+#include "./module/pm/hkadc/sdm630-TSUBAKI03-hkadc.dtsi"
+#include "./module/sensors/sdm660-TSUBAKI03-sensors.dtsi"
+
+&mtp_batterydata {
+	#include "./module/pm/fg/sdm630-TSUBAKI03-batterydata-2940mah.dtsi"
+};

@@ -1,0 +1,95 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+&spmi_bus {
+	pm660l_3: qcom,pm660l@3 {
+		pm660l_wled: qcom,leds@d800 {
+			linux,name = "lcd-backlight";
+			/delete-property/ qcom,auto-calibration-enable;
+		};
+
+		pm660l_pwm_3: pwm@b300 {
+			/delete-property/ qcom,period;
+			/delete-node/ qcom,lpg;
+		};
+
+		qcom,leds@d000 {
+			compatible = "leds-tricolor";
+			device-name = "leds-ledlight";
+			red_led: qcom,rgb_0 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 20];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <160>;
+			};
+
+			green_led: qcom,rgb_1 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 19];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <128>;
+			};
+
+			blue_led: qcom,rgb_2 {
+				qcom,mode = "pwm";
+				qcom,start-idx = <0>;
+				qcom,idx-len = <2>;
+				qcom,duty-pcts =
+					[00 19];
+				qcom,lut-flags = <25>;
+				qcom,use-blink;
+				kc,led-current = <128>;
+			};
+		};
+	};
+};
+
+&pm660l_wled {
+	qcom,led-strings-list = [00 01];
+	qcom,fs-curr-ua = <17500>;
+	qcom,en-cabc;
+
+	kc,wled-brightness = <
+		0 52 52 52 52 52 52 52 52 52 52 52 52 52 52 52 
+		52 52 52 52 52 52 52 52 52 52 52 52 52 52 52 52 
+		60 66 75 83 91 98 107 114 123 130 138 146 155 161 170 178 
+		187 193 201 210 217 225 233 241 249 257 264 273 281 288 296 305 
+		312 319 328 335 344 351 359 367 376 382 391 399 407 414 423 430 
+		439 446 453 462 470 477 485 494 502 509 517 526 533 541 549 557 
+		565 572 580 588 597 603 612 620 628 635 644 651 660 667 675 683 
+		692 698 706 715 722 730 738 746 754 762 769 778 786 792 801 810 
+		810 825 842 861 893 912 927 945 977 990 1000 1010 1020 1030 1050 1070 
+		1090 1110 1130 1150 1170 1175 1191 1207 1223 1238 1255 1270 1287 1302 1317 1334 
+		1350 1366 1382 1398 1414 1430 1445 1461 1477 1493 1509 1524 1541 1560 1580 1600 
+		1620 1636 1653 1684 1700 1732 1747 1779 1795 1827 1842 1874 1890 1922 1939 1970 
+		1986 2018 2033 2065 2081 2113 2128 2161 2178 2208 2225 2257 2272 2304 2319 2351 
+		2367 2399 2415 2447 2464 2494 2511 2543 2558 2590 2622 2637 2669 2685 2733 2765 
+		2812 2844 2891 2923 2972 3004 3051 3083 3130 3162 3209 3242 3290 3322 3369 3401 
+		3448 3480 3528 3560 3608 3639 3687 3719 3766 3799 3846 3878 3925 3973 4005 4053 
+	>;
+};
+
+&blue_led {
+	kc,led-disable;
+};

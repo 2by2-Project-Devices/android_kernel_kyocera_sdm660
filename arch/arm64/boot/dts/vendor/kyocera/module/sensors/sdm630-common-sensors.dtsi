@@ -1,0 +1,252 @@
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
+
+&soc {
+	sensor_power {
+		compatible = "kc,sensor-power-driver";
+		vsensor_io-supply = <&pm660_l13>;
+//		sens_sleep_clk-gpio = <&pm660_gpios 2 0>;
+//		vsensor-gpio-ctrl;
+		vsensor_18-supply = <&pm660_l14>;
+//		vsensor_18-gpio = <&tlmm ** 0>;
+		vsensor_18-power-wait-ms = <50>;
+		vsensor_18-voltage-min = <1800000>;
+		vsensor_18-voltage-max = <1800000>;
+		vsensor_18-load = <50000>;
+	};
+};
+
+&spi_1 {
+	sensor_micon {
+		status = "disabled";
+		compatible = "sensor_micon";
+		reg = <0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <30 0>;
+		spi-max-frequency = <3840000>;
+		pinctrl-names = "sensor_micon_default", "sensor_micon_active", "sensor_micon_sleep";
+		pinctrl-0 = <&micon_int_n_default &micon_brmp_default &micon_rst_n_default>;
+		pinctrl-1 = <&micon_int_n_active &micon_brmp_active &micon_rst_n_active>;
+		pinctrl-2 = <&micon_int_n_suspend &micon_brmp_suspend &micon_rst_n_suspend>;
+		LAPIS,rst-gpio = <&tlmm 13 0>;
+		LAPIS,brmp-gpio = <&tlmm 12 0>;
+		LAPIS,int-gpio = <&tlmm 30 0>;
+		//spi-cpol = <0>; /* SPI Mode 0 */
+		//spi-cpha = <0>; /* SPI Mode 0 */
+		spi-cs-high; /* CS Active Level High */
+		micon-acc-conv_axis = /bits/ 8 <0>;
+		micon-gyro-conv_axis = /bits/ 8 <0>;
+		micon-mag-conv_axis = /bits/ 8 <0>;
+		micon-timestamp-adjust-sensor = <1861716963>;
+		micon-timestamp-adjust-app = <3000111105>;
+		micon-timestamp-adjust-dailys = <3000111105>;
+		micon-mag-static_matrix = <0x2710 0x0 0x0 0x0 0x2710 0x0 0x0 0x0 0x2710>; /* 10000, 0, 0, 0, 10000, 0, 0, 0, 10000 */
+		micon-fw-version = <0x0E02000B>;
+	};
+};
+
+&i2c_6 {
+	rpr0521@38 { /* Ambient light and proximity sensor */
+		status = "disabled";
+		compatible = "rpr0521_i2c";
+		reg = <0x38>;
+		pinctrl-names = "default","active","suspend";
+		pinctrl-0 = <&proximity_int_n_default>;
+		pinctrl-1 = <&proximity_int_n_active>;
+		pinctrl-2 = <&proximity_int_n_suspend>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <71 0x2002>;
+		rpr0521,psals-power-offon-interval-ms = <10>;
+		rpr0521,psals-power-on-wait-ms = <5>;
+		rpr0521,psals-power-normal-wait-ms = <1>;
+		//rpr0521,psals-PMIC-supply-ctrl;
+		psals-vcc-supply = <&pm660l_l6>;
+		psals-vcc-min-voltage = <3300000>;
+		psals-vcc-max-voltage = <3300000>;
+		psals-vcc-on-load-current = <5000>;
+		psals-vcc-off-load-current = <300>;
+	};
+};
+
+&i2c_8 {
+	ltr559@23 {
+		status = "disabled";
+		compatible= "qcom,ltr559";
+		reg = <0x23>;
+		pinctrl-names = "default","active","suspend";
+		pinctrl-0 = <&proximity_int_n_default>;
+		pinctrl-1 = <&proximity_int_n_active>;
+		pinctrl-2 = <&proximity_int_n_suspend>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <71 0x2002>;
+		qcom,irq-gpio = <&tlmm 71 0x2008>;
+		vdd-supply = <&pm660l_l3>;
+		vio-supply = <&pm660_l13>;
+	};
+};
+
+&tlmm {
+	/delete-node/ micon_brmp;
+	micon_brmp {
+		micon_brmp_default: micon_brmp_default {
+			mux {
+				pins = "gpio12";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio12";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		micon_brmp_active: micon_brmp_active {
+			mux {
+				pins = "gpio12";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio12";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+		micon_brmp_suspend: micon_brmp_suspend {
+			mux {
+				pins = "gpio12";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio12";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+	};
+
+	/delete-node/ micon_rst_n;
+	micon_rst_n {
+		micon_rst_n_default: micon_rst_n_default {
+			mux {
+				pins = "gpio13";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio13";
+				drive-strength = <2>;
+				bias-disable;
+				output-low;
+			};
+		};
+		micon_rst_n_active: micon_rst_n_active {
+			mux {
+				pins = "gpio13";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio13";
+				drive-strength = <2>;
+				bias-disable;
+				output-high;
+			};
+		};
+		micon_rst_n_suspend: micon_rst_n_suspend {
+			mux {
+				pins = "gpio13";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio13";
+				drive-strength = <2>;
+				bias-disable;
+				output-high;
+			};
+		};
+	};
+
+	/delete-node/ micon_int_n;
+	micon_int_n {
+		micon_int_n_default: micon_int_n_default {
+			mux {
+				pins = "gpio30";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio30";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+		micon_int_n_active: micon_int_n_active {
+			mux {
+				pins = "gpio30";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio30";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+		micon_int_n_suspend: micon_int_n_suspend {
+			mux {
+				pins = "gpio30";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio30";
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+	};
+
+	/delete-node/ proximity_int_n;
+	proximity_int_n {
+		proximity_int_n_default: proximity_int_n_default {
+			mux {
+				pins = "gpio71";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio71";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		proximity_int_n_active: proximity_int_n_active {
+			mux {
+				pins = "gpio71";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio71";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		proximity_int_n_suspend: proximity_int_n_suspend {
+			mux {
+				pins = "gpio71";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio71";
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+	};
+};

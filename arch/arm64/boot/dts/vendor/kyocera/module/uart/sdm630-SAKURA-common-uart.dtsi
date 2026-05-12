@@ -1,0 +1,65 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/ {
+	aliases {
+		serial9 = &blsp1_uart2_hsl;   // This device will be called ttyHSL9
+	};
+};
+
+&uartblsp1dm1 {
+	status = "disabled";
+};
+
+&uartblsp2dm1 {
+	status = "disabled";
+};
+
+&blsp1_uart1_hs {
+	status = "disabled";
+};
+
+&blsp1_uart2_hs {
+	status = "disabled";
+};
+
+&blsp2_uart1_hs {
+	status = "ok";
+};
+
+&blsp2_uart2_hs {
+	status = "disabled";
+};
+
+&soc {
+	blsp1_uart2_hsl: uart@c170000 { /* BLSP1 UART2 */
+		compatible = "qcom,msm-lsuart-v14";
+		reg = <0xc170000 0x100>;
+		interrupts = <0 108 0>;
+		status = "disabled";
+		qcom,config-gpio = <1>;
+		qcom,msm-bus,num-cases = <2>;
+		qcom,msm-bus,num-paths = <1>;
+		qcom,msm-bus,vectors-KBps =
+				<86 512 0 0>,
+				<86 512 500 800>;
+		pinctrl-names = "uart9_inactive", "uart9_active", "uart9_sleep";
+		pinctrl-0 = <&ir_uart_rx_default &ir_uart_tx_default>;
+		pinctrl-1 = <&ir_uart_rx_f2_active &ir_uart_tx_f2_active>;
+		pinctrl-2 = <&ir_uart_rx_suspend &ir_uart_tx_suspend>;
+		clocks = <&clock_gcc GCC_BLSP1_UART2_APPS_CLK>,
+		    <&clock_gcc GCC_BLSP1_AHB_CLK>;
+		clock-names = "core_clk", "iface_clk";
+	};
+};

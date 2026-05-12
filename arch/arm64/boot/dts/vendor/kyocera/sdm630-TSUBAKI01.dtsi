@@ -1,0 +1,32 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "./module/display/sdm630-TSUBAKI00-display.dtsi"
+#include "./module/lights/sdm630-TSUBAKI00-lights.dtsi"
+#include "./module/touchscreen/sdm630-TSUBAKI01-cyttsp5.dtsi"
+#include "./module/usb/sdm630-TSUBAKI01-usb.dtsi"
+#include "./module/keys/sdm630-TSUBAKI00-keys.dtsi"
+#include "./module/bsp/blsp/sdm630-TSUBAKI00-blsp.dtsi"
+#include "./module/sensors/sdm630-TSUBAKI00-sensors.dtsi"
+#include "./module/pm/gpio/sdm630-TSUBAKI00-gpio.dtsi"
+#include "./module/pm/hkadc/sdm630-TSUBAKI00-hkadc.dtsi"
+#include "./module/pm/charger/sdm630-TSUBAKI00-charger.dtsi"
+#include "./module/pm/fg/sdm630-TSUBAKI00-fg.dtsi"
+#include "./module/fingerprint/fpc1020.dtsi"
+#include "./module/audio/sdm630-TSUBAKI01-audio.dtsi"
+#include "./module/vib/sdm630-TSUBAKI01-vib.dtsi"
+
+&mtp_batterydata {
+	#include "./module/pm/fg/sdm630-TSUBAKI00-batterydata-3100mah.dtsi"
+};

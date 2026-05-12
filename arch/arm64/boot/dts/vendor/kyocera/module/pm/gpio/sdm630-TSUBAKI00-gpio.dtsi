@@ -1,0 +1,41 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pm660l_gpios {
+	/* GPIO 5 (PTT_KEY_N) */
+	gpio@c400 {
+		qcom,mode = <0>;		/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;		/* QPNP_PIN_VIN0 */
+		qcom,pull = <0>;		/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 6 (CAMERA_KEY_N) */
+	gpio@c500 {
+		qcom,mode = <0>;		/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;		/* QPNP_PIN_VIN0 */
+		qcom,pull = <0>;		/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+	/* GPIO 8 (PTT_SW_N) */
+	gpio@c700 {
+		qcom,mode = <0>;		/* QPNP_PIN_MODE_DIG_IN */
+		qcom,vin-sel = <0>;		/* QPNP_PIN_VIN0 */
+		qcom,pull = <0>;		/* QPNP_PIN_PULL_UP_30 */
+		qcom,master-en = <1>;		/* Enable */
+		status = "okay";
+	};
+};
+
