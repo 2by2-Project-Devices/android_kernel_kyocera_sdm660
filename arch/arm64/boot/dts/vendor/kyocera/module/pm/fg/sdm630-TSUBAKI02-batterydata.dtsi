@@ -14,8 +14,12 @@
 
 / {
 	/delete-node/qcom,battery-data;
-	mtp_batterydata: qcom,battery-data {
+	kyocera_tsubaki02_batterydata: qcom,battery-data {
 		qcom,batt-id-range-pct = <15>;
 		#include "sdm630_BYD_2800mAH.dtsi"
 	};
+};
+
+&pm660_fg {
+	qcom,battery-data = <&kyocera_tsubaki02_batterydata>;
 };

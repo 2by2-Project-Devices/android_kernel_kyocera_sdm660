@@ -64,14 +64,6 @@
 	status = "disabled";
 };
 
-&glink_fifo_wdsp {
-	status = "disabled";
-};
-
-&glink_qos_wdsp {
-	status = "disabled";
-};
-
 &pmic_analog_codec {
 	status = "okay";
 };

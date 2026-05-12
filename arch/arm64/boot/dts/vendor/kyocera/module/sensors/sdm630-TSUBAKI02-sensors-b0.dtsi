@@ -14,8 +14,6 @@
  * (C) 2018 KYOCERA Corporation
  */
 
-#include "sdm630-TSUBAKI02-sensors.dtsi"
-
 &i2c_8 {
 	ltr559@23 { /* Ambient light and proximity sensor */
 		status = "disabled";
