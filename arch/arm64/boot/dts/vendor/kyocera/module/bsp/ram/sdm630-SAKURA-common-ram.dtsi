@@ -19,5 +19,13 @@
 			no-map;
 			reg = <0x0 0xa0200000 0x0 0x400000>;
 		};
+
+		ramoops_mem: ramoops@85500000 {
+			compatible = "ramoops";
+			reg = <0x0 0x85500000 0x0 0x100000>;
+			record-size = <0x20000>;
+			console-size = <0x40000>;
+			pmsg-size = <0x20000>;
+		};
 	};
 };
