@@ -34,6 +34,7 @@
 #include "cyttsp5_regs.h"
 
 #include <linux/i2c.h>
+#include <linux/pinctrl/consumer.h>
 #include <linux/version.h>
 
 #define CY_I2C_DATA_SIZE  (2 * 256)
@@ -119,15 +120,15 @@ int cyttsp5_tp_i2c_pinctrl_select(struct device *dev, int state)
 	switch(state){
 		case 0:
 			pr_debug("%s: pinctrl default\n",__func__);
-			err = i2c_pinctrl_set_default(client->adapter);
+			err = pinctrl_pm_select_default_state(&client->adapter->dev);
 			break;
 		case 1:
 			pr_debug("%s: pinctrl active\n",__func__);
-			err = i2c_pinctrl_set_active(client->adapter);
+			err = pinctrl_pm_select_default_state(&client->adapter->dev);
 			break;
 		case 2:
 			pr_debug("%s: pinctrl sleep\n",__func__);
-			err = i2c_pinctrl_set_sleep(client->adapter);
+			err = pinctrl_pm_select_sleep_state(&client->adapter->dev);
 			break;
 		default:
 			pr_err("%s: state is error\n",__func__);

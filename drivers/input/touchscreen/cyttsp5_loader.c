@@ -46,13 +46,19 @@
 #define CYTTSP5_AUTO_LOAD_FOR_CORRUPTED_FW 1
 #define CYTTSP5_LOADER_FW_UPGRADE_RETRY_COUNT 3
 
-#define CYTTSP5_FW_UPGRADE \
-	(defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_PLATFORM_FW_UPGRADE) \
-	|| defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_BINARY_FW_UPGRADE))
+#if defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_PLATFORM_FW_UPGRADE) || \
+	defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_BINARY_FW_UPGRADE)
+#define CYTTSP5_FW_UPGRADE 1
+#else
+#define CYTTSP5_FW_UPGRADE 0
+#endif
 
-#define CYTTSP5_TTCONFIG_UPGRADE \
-	(defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_PLATFORM_TTCONFIG_UPGRADE) \
-	|| defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_MANUAL_TTCONFIG_UPGRADE))
+#if defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_PLATFORM_TTCONFIG_UPGRADE) || \
+	defined(CONFIG_TOUCHSCREEN_CYPRESS_CYTTSP5_MANUAL_TTCONFIG_UPGRADE)
+#define CYTTSP5_TTCONFIG_UPGRADE 1
+#else
+#define CYTTSP5_TTCONFIG_UPGRADE 0
+#endif
 
 static const u8 cyttsp5_security_key[] = {
 	0xA5, 0x01, 0x02, 0x03, 0xFF, 0xFE, 0xFD, 0x5A
@@ -319,7 +325,7 @@ static int cyttsp5_ldr_prog_row_(struct device *dev,
 				 struct cyttsp5_hex_image *row_image)
 {
 	u16 length = row_image->row_size + 3;
-	u8 data[3 + row_image->row_size];
+	u8 data[3 + CY_DATA_ROW_SIZE];
 	u8 offset = 0;
 
 	data[offset++] = row_image->array_id;

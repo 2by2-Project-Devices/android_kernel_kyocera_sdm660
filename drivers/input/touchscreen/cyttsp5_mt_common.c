@@ -34,6 +34,8 @@
 
 #include "cyttsp5_regs.h"
 
+#include <linux/bitmap.h>
+
 #define CYTTSP5_MT_NAME "cyttsp5_mt"
 
 #define MT_PARAM_SIGNAL(md, sig_ost) PARAM_SIGNAL(md->pdata->frmwrk, sig_ost)
@@ -217,11 +219,14 @@ static void cyttsp5_get_mt_touches(struct cyttsp5_mt_data *md,
 	struct cyttsp5_core_data *cd = dev_get_drvdata(dev);
 	int sig;
 	int i, j, t = 0;
-	DECLARE_BITMAP(ids, si->tch_abs[CY_TCH_T].max);
+	unsigned long *ids;
 	int mt_sync_count = 0;
 	u8 *tch_addr;
 
-	bitmap_zero(ids, si->tch_abs[CY_TCH_T].max);
+	ids = bitmap_zalloc(si->tch_abs[CY_TCH_T].max, GFP_KERNEL);
+	if (!ids)
+		return;
+
 	memset(tch->abs, 0, sizeof(tch->abs));
 
 	for (i = 0; i < num_cur_tch; i++) {
@@ -347,6 +352,7 @@ cyttsp5_get_mt_touches_pr_tch:
 		md->mt_function.final_sync(md->input,
 				si->tch_abs[CY_TCH_T].max, mt_sync_count, ids);
 
+	bitmap_free(ids);
 	md->num_prv_rec = num_cur_tch;
 	cd->touch_cnt = num_cur_tch;
 }
