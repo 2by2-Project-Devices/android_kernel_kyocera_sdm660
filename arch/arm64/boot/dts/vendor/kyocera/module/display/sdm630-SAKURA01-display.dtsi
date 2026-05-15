@@ -61,7 +61,7 @@
 
 &mdss_dsi0 {
 	qcom,dsi-pref-prim-pan = <&dsi_kc_jdi_1080_video>;
-	pinctrl-names = "lcd_id_active", "lcd_id_suspend";
+	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&lcd_id_active>;
 	pinctrl-1 = <&lcd_id_suspend>;
 	qcom,platform-reset-gpio = <&tlmm 53 0>;
@@ -84,3 +84,14 @@
 	};
 };
 
+&mdss_dp_ctrl {
+	status = "disabled";
+};
+
+&mdss_fb2 {
+	status = "disabled";
+};
+
+&msm_ext_disp {
+	status = "disabled";
+};
