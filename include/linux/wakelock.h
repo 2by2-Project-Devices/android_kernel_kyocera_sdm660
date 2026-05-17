@@ -30,4 +30,10 @@ static inline void wake_lock_timeout(struct wake_lock *lock, long timeout)
 		__pm_wakeup_event(lock->ws, jiffies_to_msecs(timeout));
 }
 
+static inline void wake_unlock(struct wake_lock *lock)
+{
+	if (lock->ws)
+		__pm_relax(lock->ws);
+}
+
 #endif /* _LINUX_WAKELOCK_H */
