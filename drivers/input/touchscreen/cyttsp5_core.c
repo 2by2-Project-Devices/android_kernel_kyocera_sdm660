@@ -61,6 +61,11 @@ static const char *cy_driver_core_date = CY_DRIVER_DATE;
 static int prob_err_state;
 module_param(prob_err_state, int, S_IRUSR);
 
+static int cyttsp5_read_input(struct cyttsp5_core_data *cd);
+static int cyttsp5_parse_input(struct cyttsp5_core_data *cd);
+static int cyttsp5_wait_for_cmd_state(struct cyttsp5_core_data *cd,
+		int *cmd_state, u16 timeout_ms);
+
 struct cyttsp5_hid_field {
 	int report_count;
 	int report_size;
@@ -504,7 +509,6 @@ static int cyttsp5_hid_exec_cmd_and_wait_(struct cyttsp5_core_data *cd,
 		struct cyttsp5_hid_cmd *hid_cmd)
 {
 	int rc;
-	int t;
 	u16 timeout_ms;
 	int *cmd_state;
 
@@ -535,14 +539,13 @@ static int cyttsp5_hid_exec_cmd_and_wait_(struct cyttsp5_core_data *cd,
 	else
 		timeout_ms = CY_HID_RESET_TIMEOUT;
 
-	t = wait_event_timeout(cd->wait_q, (*cmd_state == 0),
-			msecs_to_jiffies(timeout_ms));
-	if (IS_TMO(t)) {
+	rc = cyttsp5_wait_for_cmd_state(cd, cmd_state, timeout_ms);
+	if (rc == -ETIME) {
 		dev_err(cd->dev, "%s: HID output cmd execution timed out\n",
 			__func__);
-		rc = -ETIME;
 		goto error;
-	}
+	} else if (rc)
+		goto error;
 
 	goto exit;
 
@@ -807,6 +810,34 @@ static void cyttsp5_check_command(struct cyttsp5_core_data *cd,
 	cyttsp5_check_set_parameter(cd, hid_output, raw);
 }
 
+static int cyttsp5_wait_for_cmd_state(struct cyttsp5_core_data *cd,
+		int *cmd_state, u16 timeout_ms)
+{
+	int elapsed_ms = 0;
+	int rc;
+	int t;
+
+	do {
+		t = wait_event_timeout(cd->wait_q, (*cmd_state == 0),
+				msecs_to_jiffies(20));
+		if (!IS_TMO(t))
+			return 0;
+
+		rc = cyttsp5_read_input(cd);
+		if (!rc) {
+			rc = cyttsp5_parse_input(cd);
+			if (rc)
+				return rc;
+			if (*cmd_state == 0)
+				return 0;
+		}
+
+		elapsed_ms += 20;
+	} while (elapsed_ms < timeout_ms);
+
+	return -ETIME;
+}
+
 static int cyttsp5_hid_output_validate_response(struct cyttsp5_core_data *cd,
 		struct cyttsp5_hid_output *hid_output)
 {
@@ -837,7 +868,6 @@ static int cyttsp5_hid_send_output_user_and_wait_(struct cyttsp5_core_data *cd,
 		struct cyttsp5_hid_output *hid_output)
 {
 	int rc;
-	int t;
 
 	mutex_lock(&cd->system_lock);
 	cd->hid_cmd_state = HID_OUTPUT_USER_CMD + 1;
@@ -847,14 +877,14 @@ static int cyttsp5_hid_send_output_user_and_wait_(struct cyttsp5_core_data *cd,
 	if (rc)
 		goto error;
 
-	t = wait_event_timeout(cd->wait_q, (cd->hid_cmd_state == 0),
-			msecs_to_jiffies(CY_HID_OUTPUT_USER_TIMEOUT));
-	if (IS_TMO(t)) {
+	rc = cyttsp5_wait_for_cmd_state(cd, &cd->hid_cmd_state,
+			CY_HID_OUTPUT_USER_TIMEOUT);
+	if (rc == -ETIME) {
 		dev_err(cd->dev, "%s: HID output cmd execution timed out\n",
 			__func__);
-		rc = -ETIME;
 		goto error;
-	}
+	} else if (rc)
+		goto error;
 
 	cyttsp5_check_command(cd, hid_output, true);
 
@@ -950,7 +980,6 @@ static int cyttsp5_hid_send_output_and_wait_(struct cyttsp5_core_data *cd,
 		struct cyttsp5_hid_output *hid_output)
 {
 	int rc;
-	int t;
 #ifdef VERBOSE_DEBUG
 	u16 size;
 #endif
@@ -980,14 +1009,13 @@ static int cyttsp5_hid_send_output_and_wait_(struct cyttsp5_core_data *cd,
 		enable_irq(cd->irq);
 	}
 
-	t = wait_event_timeout(cd->wait_q, (cd->hid_cmd_state == 0),
-			msecs_to_jiffies(timeout_ms));
-	if (IS_TMO(t)) {
+	rc = cyttsp5_wait_for_cmd_state(cd, &cd->hid_cmd_state, timeout_ms);
+	if (rc == -ETIME) {
 		dev_err(cd->dev, "%s: HID output cmd execution timed out\n",
 			__func__);
-		rc = -ETIME;
 		goto error;
-	}
+	} else if (rc)
+		goto error;
 
 	if (!hid_output->novalidate)
 		rc = cyttsp5_hid_output_validate_response(cd, hid_output);
@@ -4273,6 +4301,9 @@ static int cyttsp5_reset_and_wait(struct cyttsp5_core_data *cd)
 {
 	int rc;
 	int t;
+	int elapsed_ms = 0;
+	u8 reset_buf[2];
+	u16 size;
 	u16 timeout_ms = CY_HID_RESET_TIMEOUT;
 
 	mutex_lock(&cd->system_lock);
@@ -4303,18 +4334,37 @@ static int cyttsp5_reset_and_wait(struct cyttsp5_core_data *cd)
 		timeout_ms = CY_HID_RESET_TIMEOUT_PROBE;
 	}
 
-	t = wait_event_timeout(cd->wait_q, (cd->hid_reset_cmd_state == 0),
-			msecs_to_jiffies(timeout_ms));
-	if (IS_TMO(t)) {
-		dev_err(cd->dev, "%s: reset timed out\n",
-			__func__);
-		rc = -ETIME;
-		if(prob_err_state == CY_INI_VAL)
-			prob_err_state = CY_NO_IRQ;
-		goto error;
-	}
+	do {
+		t = wait_event_timeout(cd->wait_q,
+				(cd->hid_reset_cmd_state == 0),
+				msecs_to_jiffies(20));
+		if (!IS_TMO(t))
+			goto exit;
 
-	goto exit;
+		rc = cyttsp5_adap_read_default(cd, reset_buf,
+				sizeof(reset_buf));
+		if (!rc) {
+			size = get_unaligned_le16(&reset_buf[0]);
+			if (size == 0) {
+				dev_info(cd->dev,
+					"%s: reset completed by polling\n",
+					__func__);
+				mutex_lock(&cd->system_lock);
+				cd->hid_reset_cmd_state = 0;
+				mutex_unlock(&cd->system_lock);
+				goto exit;
+			}
+		}
+
+		elapsed_ms += 20;
+	} while (elapsed_ms < timeout_ms);
+
+	dev_err(cd->dev, "%s: reset timed out\n",
+		__func__);
+	rc = -ETIME;
+	if(prob_err_state == CY_INI_VAL)
+		prob_err_state = CY_NO_IRQ;
+	goto error;
 
 error:
 	mutex_lock(&cd->system_lock);

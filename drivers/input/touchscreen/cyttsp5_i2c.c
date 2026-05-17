@@ -33,11 +33,15 @@
 
 #include "cyttsp5_regs.h"
 
+#include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/version.h>
 
 #define CY_I2C_DATA_SIZE  (2 * 256)
+#define CY_I2C_PINCTRL_DEFAULT "i2c_default"
+#define CY_I2C_PINCTRL_ACTIVE "i2c_active"
+#define CY_I2C_PINCTRL_SUSPEND "i2c_sleep"
 
 static int cyttsp5_i2c_read_default(struct device *dev, void *buf, int size)
 {
@@ -115,26 +119,52 @@ static int cyttsp5_i2c_write_read_specific(struct device *dev, u8 write_len,
 int cyttsp5_tp_i2c_pinctrl_select(struct device *dev, int state)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+	struct device *adap_dev = &client->adapter->dev;
+	struct pinctrl *pinctrl;
+	struct pinctrl_state *pinctrl_state;
+	const char *state_name;
 	int err = 0;
 
 	switch(state){
 		case 0:
 			pr_debug("%s: pinctrl default\n",__func__);
-			err = pinctrl_pm_select_default_state(&client->adapter->dev);
+			state_name = CY_I2C_PINCTRL_DEFAULT;
 			break;
 		case 1:
 			pr_debug("%s: pinctrl active\n",__func__);
-			err = pinctrl_pm_select_default_state(&client->adapter->dev);
+			state_name = CY_I2C_PINCTRL_ACTIVE;
 			break;
 		case 2:
 			pr_debug("%s: pinctrl sleep\n",__func__);
-			err = pinctrl_pm_select_sleep_state(&client->adapter->dev);
+			state_name = CY_I2C_PINCTRL_SUSPEND;
 			break;
 		default:
 			pr_err("%s: state is error\n",__func__);
-			break;
+			return -EINVAL;
 	}
+
+	pinctrl = pinctrl_get(adap_dev);
+	if (IS_ERR(pinctrl)) {
+		err = PTR_ERR(pinctrl);
+		goto fallback;
+	}
+
+	pinctrl_state = pinctrl_lookup_state(pinctrl, state_name);
+	if (IS_ERR(pinctrl_state)) {
+		err = PTR_ERR(pinctrl_state);
+		pinctrl_put(pinctrl);
+		goto fallback;
+	}
+
+	err = pinctrl_select_state(pinctrl, pinctrl_state);
+	pinctrl_put(pinctrl);
 	return err;
+
+fallback:
+	if (state == 2)
+		return pinctrl_pm_select_sleep_state(adap_dev);
+
+	return pinctrl_pm_select_default_state(adap_dev);
 }
 
 static struct cyttsp5_bus_ops cyttsp5_i2c_bus_ops = {
