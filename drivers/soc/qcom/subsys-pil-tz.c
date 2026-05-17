@@ -1244,9 +1244,6 @@ static int pil_tz_driver_probe(struct platform_device *pdev)
 		}
 	}
 
-	d->desc.sequential_loading = of_property_read_bool(pdev->dev.of_node,
-						"qcom,sequential-fw-load");
-
 	d->ramdump_dev = create_ramdump_device(d->subsys_desc.name,
 								&pdev->dev);
 	if (!d->ramdump_dev) {
