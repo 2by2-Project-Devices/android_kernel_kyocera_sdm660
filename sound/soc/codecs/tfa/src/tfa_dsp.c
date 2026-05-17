@@ -2611,7 +2611,7 @@ enum Tfa98xx_Error tfaRunSpeakerCalibration(Tfa98xx_handle_t handle, int profile
 	enum Tfa98xx_Error err = Tfa98xx_Error_Ok;
 	int calibrateDone, spkr_count = 0;
 	/* Avoid warning in user-space */
-	profile=profile;
+	(void)profile;
 
 #ifdef CONFIG_KYOCERA_MSND
 	if (!tfa98xx_calibration_flag) {
@@ -3206,7 +3206,7 @@ error_exit:
 		tfaContClose(dev); /* close all of them */
 	}
 
-	return err;
+	return (enum tfa_error)err;
 }
 
 enum tfa_error tfa_stop(void)
@@ -3275,7 +3275,7 @@ enum tfa_error tfa_stop(void)
 error_exit:
 	for( dev=0; dev < devcount; dev++)
 		tfaContClose(dev); /* close all of them */
-	return err;
+	return (enum tfa_error)err;
 }
 
 /*
@@ -3327,7 +3327,7 @@ enum tfa_error tfa_reset(void)
 		tfaContClose(dev);
 	}
 
-	return err;
+	return (enum tfa_error)err;
 }
 
 /*

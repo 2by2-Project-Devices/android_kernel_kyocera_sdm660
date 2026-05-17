@@ -32,6 +32,16 @@
 #include <linux/version.h>
 #include <linux/input.h>
 
+#define snd_soc_codec snd_soc_component
+#define snd_soc_codec_driver snd_soc_component_driver
+#define snd_soc_codec_get_drvdata snd_soc_component_get_drvdata
+#define snd_soc_kcontrol_codec snd_soc_kcontrol_component
+#define snd_soc_add_codec_controls snd_soc_add_component_controls
+#define snd_soc_codec_get_dapm snd_soc_component_get_dapm
+#define snd_soc_read snd_soc_component_read32
+#define snd_soc_register_codec snd_soc_register_component
+#define snd_soc_unregister_codec snd_soc_unregister_component
+
 #include "config.h"
 
 #define I2C_RETRIES 50
@@ -2624,7 +2634,7 @@ static void tfa98xx_interrupt(struct work_struct *work)
 static int tfa98xx_startup(struct snd_pcm_substream *substream,
 						struct snd_soc_dai *dai)
 {
-	struct snd_soc_codec *codec = dai->codec;
+	struct snd_soc_codec *codec = dai->component;
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
 	unsigned int sr;
 	int len, prof, nprof = tfaContMaxProfile(tfa98xx->handle), idx = 0;
@@ -2689,7 +2699,7 @@ static int tfa98xx_startup(struct snd_pcm_substream *substream,
 static int tfa98xx_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				  int clk_id, unsigned int freq, int dir)
 {
-	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec_dai->codec);
+	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec_dai->component);
 
 	tfa98xx->sysclk = freq;
 	return 0;
@@ -2697,8 +2707,8 @@ static int tfa98xx_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 
 static int tfa98xx_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(dai->codec);
-	struct snd_soc_codec *codec = dai->codec;
+	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(dai->component);
+	struct snd_soc_codec *codec = dai->component;
 
 	pr_debug("fmt=0x%x\n", fmt);
 
@@ -2738,7 +2748,7 @@ static int tfa98xx_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *params,
 			     struct snd_soc_dai *dai)
 {
-	struct snd_soc_codec *codec = dai->codec;
+	struct snd_soc_codec *codec = dai->component;
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
 	unsigned int rate;
 	int prof_idx;
@@ -2776,7 +2786,7 @@ static int tfa98xx_hw_params(struct snd_pcm_substream *substream,
 
 static int tfa98xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 {
-	struct snd_soc_codec *codec = dai->codec;
+	struct snd_soc_codec *codec = dai->component;
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(&tfa98xx->i2c->dev, "state: %d\n", mute);
@@ -2908,7 +2918,7 @@ static int tfa98xx_probe(struct snd_soc_codec *codec)
 	return ret;
 }
 
-static int tfa98xx_remove(struct snd_soc_codec *codec)
+static void tfa98xx_remove(struct snd_soc_codec *codec)
 {
 	struct tfa98xx *tfa98xx = snd_soc_codec_get_drvdata(codec);
 	pr_debug("\n");
@@ -2922,8 +2932,6 @@ static int tfa98xx_remove(struct snd_soc_codec *codec)
 
 	if (tfa98xx->tfa98xx_wq)
 		destroy_workqueue(tfa98xx->tfa98xx_wq);
-
-	return 0;
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
@@ -2937,9 +2945,6 @@ struct regmap *tfa98xx_get_regmap(struct device *dev)
 static struct snd_soc_codec_driver soc_codec_dev_tfa98xx = {
 	.probe =	tfa98xx_probe,
 	.remove =	tfa98xx_remove,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
-	.get_regmap = tfa98xx_get_regmap,
-#endif
 };
 
 
@@ -3444,6 +3449,3 @@ module_exit(tfa98xx_i2c_exit);
 
 MODULE_DESCRIPTION("ASoC TFA98XX driver");
 MODULE_LICENSE("GPL");
-
-
-

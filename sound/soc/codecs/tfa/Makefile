@@ -3,16 +3,13 @@
 #
 # For NXP Smart Audio.
 
-# tfa drivers code path:
-TFA_PATH := sound/soc/codecs/tfa
-
 # include path defination.
-EXTRA_CFLAGS += -I$(TFA_PATH)/inc
-EXTRA_CFLAGS += -I$(TFA_PATH)/linux-kernel-inc
-EXTRA_CFLAGS += -I$(TFA_PATH)/src
+ccflags-y += -I$(srctree)/sound/soc/codecs/tfa/inc
+ccflags-y += -I$(srctree)/sound/soc/codecs/tfa/linux-kernel-inc
+ccflags-y += -I$(srctree)/sound/soc/codecs/tfa/src
 
 # debugging support (also enables trace_printk)
-EXTRA_CFLAGS += -DDEBUG
+ccflags-y += -DDEBUG
 
 # tfa source code:
 snd-soc-tfa98xx-objs := src/tfa98xx.o
