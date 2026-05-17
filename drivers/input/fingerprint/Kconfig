@@ -1,0 +1,29 @@
+# This software is contributed or developed by KYOCERA Corporation.
+# (C) 2019 KYOCERA Corporation
+#
+# Input fingerprint drivers configuration
+#
+
+config INPUT_FINGERPRINT
+	bool "Enable Fingerprint Driver Support"
+	default y
+	help
+	  Add support for fingerprint driver.
+
+if INPUT_FINGERPRINT
+config INPUT_FINGERPRINT_FPC
+	bool "Enable Fingerprint Driver Support of FPC"
+	depends on INPUT_FINGERPRINT
+	default y
+	help
+	  Add support for fingerprint driver of fpc.
+
+endif
+
+if INPUT_FINGERPRINT_FPC
+config INPUT_FINGERPRINT_FPC1020
+	bool "Enable Fingerprint Driver Support of FPC1020"
+	default y
+	help
+	  Add support for fingerprint driver of fpc1020.
+endif
