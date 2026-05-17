@@ -1447,7 +1447,7 @@ static struct snd_soc_dai_link msm_ext_common_be_dai[] = {
 		.ops = &msm_tdm_be_ops,
 		.ignore_suspend = 1,
 	},
-	{
+	/*{
 		.name = LPASS_BE_QUIN_TDM_RX_0,
 		.stream_name = "Quinary TDM0 Playback",
 		.cpu_dai_name = "msm-dai-q6-tdm.36928",
@@ -1475,7 +1475,7 @@ static struct snd_soc_dai_link msm_ext_common_be_dai[] = {
 		.be_hw_params_fixup = msm_tdm_be_hw_params_fixup,
 		.ops = &msm_tdm_be_ops,
 		.ignore_suspend = 1,
-	},
+	},*/
 };
 
 static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
@@ -1595,7 +1595,7 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 		.ops = &msm_mi2s_be_ops,
 		.ignore_suspend = 1,
 	},
-	{
+	/*{
 		.name = LPASS_BE_QUIN_MI2S_RX,
 		.stream_name = "Quinary MI2S Playback",
 		.cpu_dai_name = "msm-dai-q6-mi2s.4",
@@ -1623,7 +1623,7 @@ static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 		.be_hw_params_fixup = msm_common_be_hw_params_fixup,
 		.ops = &msm_mi2s_be_ops,
 		.ignore_suspend = 1,
-	},
+	},*/
 };
 
 static struct snd_soc_dai_link msm_auxpcm_be_dai_links[] = {
