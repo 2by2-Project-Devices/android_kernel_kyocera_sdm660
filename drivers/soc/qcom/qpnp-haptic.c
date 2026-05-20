@@ -1,3 +1,7 @@
+/*
+ * This software is contributed or developed by KYOCERA Corporation.
+ * (C) 2018 KYOCERA Corporation
+ */
 /* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,6 +32,7 @@
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/log2.h>
+#include <linux/uaccess.h>
 #include <linux/qpnp/qpnp-misc.h>
 #include <linux/qpnp/qpnp-haptic.h>
 #include <linux/qpnp/qpnp-revid.h>
@@ -53,6 +58,7 @@
 #define QPNP_HAP_PWM_CAP_REG(b)		(b + 0x58)
 #define QPNP_HAP_SC_CLR_REG(b)		(b + 0x59)
 #define QPNP_HAP_SC_IRQ_STATUS_DELAY   msecs_to_jiffies(1000)
+#define QPNP_HAP_ZX_CFG(b)		(b + 0x5A)
 #define QPNP_HAP_BRAKE_REG(b)		(b + 0x5C)
 #define QPNP_HAP_WAV_REP_REG(b)		(b + 0x5E)
 #define QPNP_HAP_WAV_S_REG_BASE(b)	(b + 0x60)
@@ -171,6 +177,20 @@
 #define LRA_DRIVE_PERIOD_NEG_ERR(hap, rc_clk_err_percent) \
 	(hap->init_drive_period_code = (hap->init_drive_period_code * \
 		(1000 - rc_clk_err_percent_x10)) / 1000)
+
+#define QPNP_HAP_VMAX_CFG_DEFAULT			0x1E
+#define QPNP_HAP_RATE_CFG1_DEFAULT			0xE3
+#define QPNP_HAP_RATE_CFG2_DEFAULT			0x03
+#define QPNP_HAP_CFG1_DEFAULT				0x00
+#define QPNP_HAP_CFG2_DEFAULT				0x00
+#define QPNP_HAP_SEL_DEFAULT				0x00
+#define QPNP_HAP_BREAK_DEFAULT				0x1b
+#define QPNP_HAP_EN_CTL2_DEFAULT			0x13
+#define QPNP_HAP_AUTO_RES_CTRL_DEFAULT		0xAC
+#define QPNP_HAP_AUTO_RES_CFG_DEFAULT		0x8B
+#define QPNP_HAP_ZX_CFG_DEFAULT				0x03
+
+#define SENSOR_VIB_INTERLOCKING
 
 u32 adjusted_lra_play_rate_code[ADJUSTED_LRA_PLAY_RATE_CODE_ARRSIZE];
 
@@ -355,18 +375,16 @@ struct qpnp_hap {
 	struct mutex			lock;
 	struct mutex			wf_lock;
 	spinlock_t			bus_lock;
-	spinlock_t			td_lock;
-	struct work_struct		td_work;
 	struct completion		completion;
 	enum qpnp_hap_mode		play_mode;
 	u32				misc_clk_trim_error_reg;
 	u32				init_drive_period_code;
 	u32				timeout_ms;
 	u32				time_required_to_generate_back_emf_us;
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+	u32				value_ms;
+#endif
 	u32				vmax_mv;
-	u32				vtg_min;
-	u32				vtg_max;
-	u32				vtg_default;
 	u32				ilim_ma;
 	u32				sc_deb_cycles;
 	u32				int_pwm_freq_khz;
@@ -407,10 +425,89 @@ struct qpnp_hap {
 	bool				auto_mode;
 	bool				override_auto_mode_config;
 	bool				play_irq_en;
-	int				td_time_ms;
+	u8				haptics_vmax_cfg_max;
+	u8				haptics_vmax_cfg_med;
+	u8				haptics_vmax_cfg_min;
+	u8				haptics_rate_cfg1;
+	u8				haptics_rate_cfg2;
+	u8				haptics_cfg1;
+	u8				haptics_cfg2;
+	u8				haptics_sel;
+	u8				haptics_brake;
+	u8				haptics_en_ctl2;
+	u8				haptics_auto_res_ctrl;
+	u8				haptics_auto_res_cfg;
+	u8				haptics_zx_cfg;
 };
 
 static struct qpnp_hap *ghap;
+
+#define VIB_TEST
+#ifdef VIB_TEST
+#include <linux/miscdevice.h>
+#include <linux/fs.h>
+#include <linux/ioctl.h>
+
+static int qpnp_hap_read_reg(struct qpnp_hap *hap, u16 addr, u8 *val);
+static int qpnp_hap_write_reg(struct qpnp_hap *hap, u16 addr, u8 val);
+
+#define VIB_GET_REG(reg, data) { \
+	qpnp_hap_read_reg(the_hap, the_hap->base + reg, &data); }
+
+#define VIB_SET_REG(reg, data) { \
+	qpnp_hap_write_reg(the_hap, the_hap->base + reg, data); }
+
+#define VIB_TEST_IOC_MAGIC 'v'
+#define IOCTL_VIB_TEST_CTRL _IOWR(VIB_TEST_IOC_MAGIC, 1, vib_test_param)
+
+#define VIB_TEST_SET_VOLTAGE	0x0001
+#define VIB_TEST_RD_REGISTER	0x0021
+#define VIB_TEST_WR_REGISTER	0x0022
+
+#define VIB_TEST_STATUS_SUCCESS	(0)
+#define VIB_TEST_STATUS_FAIL	(-1)
+
+typedef struct {
+	u16 req_code;
+	u8 data[4];
+} vib_test_param;
+
+typedef struct {
+	u16 voltage;
+	u8 reserved[2];
+} vib_test_set_voltage_req_data;
+
+typedef struct {
+	u16 status;
+	u8 reserved[2];
+} vib_test_rsp_data;
+
+typedef struct {
+	u16 reserved;
+	u8 reg;
+	u8 data;
+} vib_test_set_rdwr_reg_req_data;
+
+typedef struct {
+	u16 reserved;
+	u8 data[2];
+} vib_test_rsp_rdwr_reg_data;
+
+static struct qpnp_hap *the_hap;
+#endif
+
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+enum vib_strength_level {
+	VIB_STRENGTH_LOW = 1,
+	VIB_STRENGTH_MED = 2,
+	VIB_STRENGTH_HIGH = 3
+};
+#define	VIB_STRENGTH_MIN	VIB_STRENGTH_LOW
+#define	VIB_STRENGTH_DEF	VIB_STRENGTH_HIGH
+#define	VIB_STRENGTH_MAX	VIB_STRENGTH_HIGH
+
+static enum vib_strength_level	vib_strength = VIB_STRENGTH_DEF;
+#endif
 
 /* helper to read a pmic register */
 static int qpnp_hap_read_mult_reg(struct qpnp_hap *hap, u16 addr, u8 *val,
@@ -892,12 +989,12 @@ static int qpnp_hap_vmax_config(struct qpnp_hap *hap, int vmax_mv,
 	if (hap->pmic_subtype != PM660_SUBTYPE)
 		overdrive = false;
 
-	if (vmax_mv < hap->vtg_min)
-		vmax_mv = hap->vtg_min;
-	else if (vmax_mv > hap->vtg_max)
-		vmax_mv = hap->vtg_max;
+	if (vmax_mv < QPNP_HAP_VMAX_MIN_MV)
+		vmax_mv = QPNP_HAP_VMAX_MIN_MV;
+	else if (vmax_mv > QPNP_HAP_VMAX_MAX_MV)
+		vmax_mv = QPNP_HAP_VMAX_MAX_MV;
 
-	val = (vmax_mv / hap->vtg_min) << QPNP_HAP_VMAX_SHIFT;
+	val = (vmax_mv / QPNP_HAP_VMAX_MIN_MV) << QPNP_HAP_VMAX_SHIFT;
 	if (overdrive)
 		val |= QPNP_HAP_VMAX_OVD_BIT;
 	rc = qpnp_hap_masked_write_reg(hap, QPNP_HAP_VMAX_REG(hap->base),
@@ -1791,41 +1888,7 @@ static ssize_t qpnp_hap_vmax_store(struct device *dev,
 		return rc;
 
 	hap->vmax_mv = data;
-	rc = qpnp_hap_vmax_config(hap, hap->vmax_mv, true);
-	if (rc)
-		return rc;
-
 	return count;
-}
-
-static ssize_t qpnp_hap_min_show(struct device *dev,
-		struct device_attribute *attr, char *buf)
-{
-	struct timed_output_dev *timed_dev = dev_get_drvdata(dev);
-	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
-					 timed_dev);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", hap->vtg_min);
-}
-
-static ssize_t qpnp_hap_max_show(struct device *dev,
-		struct device_attribute *attr, char *buf)
-{
-	struct timed_output_dev *timed_dev = dev_get_drvdata(dev);
-	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
-					 timed_dev);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", hap->vtg_max);
-}
-
-static ssize_t qpnp_hap_default_show(struct device *dev,
-		struct device_attribute *attr, char *buf)
-{
-	struct timed_output_dev *timed_dev = dev_get_drvdata(dev);
-	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
-					 timed_dev);
-
-	return scnprintf(buf, PAGE_SIZE, "%d\n", hap->vtg_default);
 }
 
 /* sysfs attributes */
@@ -1859,10 +1922,6 @@ static struct device_attribute qpnp_hap_attrs[] = {
 		qpnp_hap_override_auto_mode_show,
 		qpnp_hap_override_auto_mode_store),
 	__ATTR(vmax_mv, 0664, qpnp_hap_vmax_show, qpnp_hap_vmax_store),
-	__ATTR(vtg_level, 0664, qpnp_hap_vmax_show, qpnp_hap_vmax_store),
-	__ATTR(vtg_min, 0664, qpnp_hap_min_show, NULL),
-	__ATTR(vtg_max, 0664, qpnp_hap_max_show, NULL),
-	__ATTR(vtg_default, 0664, qpnp_hap_default_show, NULL),
 };
 
 static int calculate_lra_code(struct qpnp_hap *hap)
@@ -2079,11 +2138,238 @@ static bool is_sw_lra_auto_resonance_control(struct qpnp_hap *hap)
 	return true;
 }
 
+#ifdef SENSOR_VIB_INTERLOCKING
+static void qpnp_hap_send_uevent(struct device *dev, int on)
+{
+	char event_string[20];
+	char *envp[] = { event_string, NULL };
+
+	if (!dev) {
+		dev_err(dev, "dev NULL\n");
+		return;
+	}
+
+	if (on)
+		sprintf(event_string, "KC_VIB=ON");
+	else
+		sprintf(event_string, "KC_VIB=OFF");
+
+	kobject_uevent_env(&dev->kobj, KOBJ_CHANGE, envp);
+
+	pr_debug("%s: dev = 0x%lx, &dev->kobj = 0x%lx\n", __func__,
+				(unsigned long)dev, (unsigned long)&dev->kobj);
+	return;
+}
+#endif
+
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+int g_enable_set_ex = 1;
+#define DEBUG_QPNP_HAP_SET_EX 0
+#if DEBUG_QPNP_HAP_SET_EX
+  #define debugk	printk
+#else
+  #define debugk(fmt, ...)
+#endif
+#define CHANGE_VMAX_CFG_VALUE_THRESH_MS 120
+static int qpnp_hap_set_ex(struct qpnp_hap *hap, int enable)
+{
+	u8 reg = 0;
+	int rc;
+#ifdef SENSOR_VIB_INTERLOCKING
+    static int vib_lasttime_val = 0;
+#endif
+	if (enable) {
+		debugk("on>>>> val=%d [%s]\n", hap->value_ms, current->comm);
+		if (hap->value_ms <= CHANGE_VMAX_CFG_VALUE_THRESH_MS) {
+			switch (vib_strength) {
+				case VIB_STRENGTH_LOW:
+					reg = hap->haptics_vmax_cfg_min;
+					break;
+				case VIB_STRENGTH_MED:
+					reg = hap->haptics_vmax_cfg_med;
+					break;
+				case VIB_STRENGTH_HIGH:
+					reg = hap->haptics_vmax_cfg_max;
+					break;
+				default:
+					break;
+			}
+		}
+		else {
+			switch (vib_strength) {
+				case VIB_STRENGTH_LOW:
+					reg = hap->haptics_vmax_cfg_min;
+					break;
+				case VIB_STRENGTH_MED:
+					reg = hap->haptics_vmax_cfg_med;
+					break;
+				case VIB_STRENGTH_HIGH:
+					reg = hap->haptics_vmax_cfg_max;
+					break;
+				default:
+					break;
+			}
+		}
+
+		//0x51
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_VMAX_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x54
+		reg = hap->haptics_rate_cfg1;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_RATE_CFG1_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x55
+		reg = hap->haptics_rate_cfg2;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_RATE_CFG2_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x4C
+		reg = hap->haptics_cfg1;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_CFG1_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x4D
+		reg = hap->haptics_cfg2;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_CFG2_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x4E
+		reg = hap->haptics_sel;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_SEL_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x5C
+		reg = hap->haptics_brake;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_BRAKE_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x48
+		reg = hap->haptics_en_ctl2;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_EN_CTL2_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x4B
+		reg = hap->haptics_auto_res_ctrl;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_AUTO_RES_CTRL(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x4F
+		reg = hap->haptics_auto_res_cfg;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_LRA_AUTO_RES_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x5A
+		reg = hap->haptics_zx_cfg;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_ZX_CFG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0xD0
+		reg = 0xA5;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_SEC_ACCESS_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0xE3
+		reg = 0x00;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_TEST2_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x46
+		reg = 0x80;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_EN_CTL_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x70
+		reg = 0x80;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_PLAY_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		msleep(20);
+
+		//0xD0
+		reg = 0xA5;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_SEC_ACCESS_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0xE3
+		reg = 0x80;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_TEST2_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+		debugk("on<<<< val=%d [%s]\n", hap->value_ms, current->comm);
+	}
+	else {
+		debugk("off>>>> val=%d [%s]\n", hap->value_ms, current->comm);
+		//0x70
+		reg = 0x00;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_PLAY_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+
+		//0x46
+		reg = 0x00;
+		rc = qpnp_hap_write_reg(hap, QPNP_HAP_EN_CTL_REG(hap->base), reg);
+		if (rc) {
+			return rc;
+		}
+		debugk("off<<<< val=%d [%s]\n", hap->value_ms, current->comm);
+	}
+#ifdef SENSOR_VIB_INTERLOCKING
+	if(vib_lasttime_val != enable) {
+		qpnp_hap_send_uevent(hap->timed_dev.dev, enable);
+		vib_lasttime_val = enable;
+	}
+#endif
+	return rc;
+}
+#endif
+
 /* set api for haptics */
 static int qpnp_hap_set(struct qpnp_hap *hap, bool on)
 {
 	int rc = 0;
 	unsigned long timeout_ns = POLL_TIME_AUTO_RES_ERR_NS;
+
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+	if (g_enable_set_ex) {
+		return qpnp_hap_set_ex(hap, on);
+	}
+#endif
 
 	if (hap->play_mode == QPNP_HAP_PWM) {
 		if (on) {
@@ -2189,7 +2475,7 @@ static int qpnp_hap_auto_mode_config(struct qpnp_hap *hap, int time_ms)
 			ares_cfg.calibrate_at_eop = -EINVAL;
 		}
 
-		vmax_mv = hap->vtg_max;
+		vmax_mv = QPNP_HAP_VMAX_MAX_MV;
 		rc = qpnp_hap_vmax_config(hap, vmax_mv, true);
 		if (rc < 0)
 			return rc;
@@ -2270,50 +2556,34 @@ static int qpnp_hap_auto_mode_config(struct qpnp_hap *hap, int time_ms)
 	return 0;
 }
 
-static void qpnp_timed_enable_worker(struct work_struct *work)
+/* enable interface from timed output class */
+static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 {
-	struct qpnp_hap *hap = container_of(work, struct qpnp_hap,
-					 td_work);
-	bool state;
-	ktime_t rem;
+	struct qpnp_hap *hap = container_of(dev, struct qpnp_hap,
+					 timed_dev);
 	int rc;
-	int time_ms;
-
-	spin_lock(&hap->td_lock);
-	time_ms = hap->td_time_ms;
-	spin_unlock(&hap->td_lock);
-
-	state = !!time_ms;
 
 	if (time_ms < 0)
 		return;
 
 	mutex_lock(&hap->lock);
 
-	if (hap->state == state) {
-		if (state) {
-			rem = hrtimer_get_remaining(&hap->hap_timer);
-			if (time_ms > ktime_to_ms(rem)) {
-				time_ms = (time_ms > hap->timeout_ms ?
-						 hap->timeout_ms : time_ms);
+	if (time_ms == 0) {
+		/* disable haptics */
 				hrtimer_cancel(&hap->hap_timer);
-				hap->play_time_ms = time_ms;
-				hrtimer_start(&hap->hap_timer,
-						ktime_set(time_ms / 1000,
-						(time_ms % 1000) * 1000000),
-						HRTIMER_MODE_REL);
-			}
-		}
+		hap->state = 0;
+		schedule_work(&hap->work);
 		mutex_unlock(&hap->lock);
 		return;
 	}
 
-	hap->state = state;
-	if (!hap->state) {
-		hrtimer_cancel(&hap->hap_timer);
-	} else {
 		if (time_ms < 10)
 			time_ms = 10;
+
+	if (is_sw_lra_auto_resonance_control(hap))
+		hrtimer_cancel(&hap->auto_res_err_poll_timer);
+
+	hrtimer_cancel(&hap->hap_timer);
 
 		if (hap->auto_mode) {
 			rc = qpnp_hap_auto_mode_config(hap, time_ms);
@@ -2324,30 +2594,17 @@ static void qpnp_timed_enable_worker(struct work_struct *work)
 			}
 		}
 
-		time_ms = (time_ms > hap->timeout_ms ?
-				 hap->timeout_ms : time_ms);
+	time_ms = (time_ms > hap->timeout_ms ? hap->timeout_ms : time_ms);
 		hap->play_time_ms = time_ms;
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+	hap->value_ms = time_ms;
+#endif
+	hap->state = 1;
 		hrtimer_start(&hap->hap_timer,
-				ktime_set(time_ms / 1000,
-				(time_ms % 1000) * 1000000),
+		ktime_set(time_ms / 1000, (time_ms % 1000) * 1000000),
 				HRTIMER_MODE_REL);
-	}
-
 	mutex_unlock(&hap->lock);
 	schedule_work(&hap->work);
-}
-
-/* enable interface from timed output class */
-static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
-{
-	struct qpnp_hap *hap = container_of(dev, struct qpnp_hap,
-					 timed_dev);
-
-	spin_lock(&hap->td_lock);
-	hap->td_time_ms = time_ms;
-	spin_unlock(&hap->td_lock);
-
-	schedule_work(&hap->td_work);
 }
 
 /* play pwm bytes */
@@ -2487,6 +2744,290 @@ static enum hrtimer_restart qpnp_hap_test_timer(struct hrtimer *timer)
 
 	return HRTIMER_NORESTART;
 }
+
+#ifdef VIB_TEST
+static int vibrator_test_open(struct inode *ip, struct file *fp)
+{
+	pr_debug("called.\n");
+	pr_debug("end.\n");
+	return 0;
+}
+
+static int vibrator_test_release(struct inode *ip, struct file *fp)
+{
+	pr_debug("called.\n");
+	pr_debug("end.\n");
+	return 0;
+}
+
+static int vibrator_test_set(int volt_mv)
+{
+	int ret = 0;
+	u8  reg = 0;
+
+	pr_debug("called. volt_mv=%dmv\n", volt_mv);
+	if (volt_mv) {
+		the_hap->vmax_mv = volt_mv;
+		ret = qpnp_hap_vmax_config(the_hap, volt_mv, false);
+		//0x54
+		reg = the_hap->haptics_rate_cfg1;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_RATE_CFG1_REG(the_hap->base), reg);
+		//0x55
+		reg = the_hap->haptics_rate_cfg2;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_RATE_CFG2_REG(the_hap->base), reg);
+		//0x4C
+		reg = the_hap->haptics_cfg1;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_CFG1_REG(the_hap->base), reg);
+		//0x4D
+		reg = the_hap->haptics_cfg2;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_CFG2_REG(the_hap->base), reg);
+		//0x4E
+		reg = the_hap->haptics_sel;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_SEL_REG(the_hap->base), reg);
+		//0x5C
+		reg = the_hap->haptics_brake;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_BRAKE_REG(the_hap->base), reg);
+		//0x48
+		reg = the_hap->haptics_en_ctl2;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_EN_CTL2_REG(the_hap->base), reg);
+		//0x4B
+		reg = the_hap->haptics_auto_res_ctrl;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_AUTO_RES_CTRL(the_hap->base), reg);
+		//0x4F
+		reg = the_hap->haptics_auto_res_cfg;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_LRA_AUTO_RES_REG(the_hap->base), reg);
+		//0x5A
+		reg = the_hap->haptics_zx_cfg;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_ZX_CFG(the_hap->base), reg);
+		//0xD0
+		reg = 0xA5;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_SEC_ACCESS_REG(the_hap->base), reg);
+		//0xE3
+		reg = 0x00;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_TEST2_REG(the_hap->base), reg);
+		//0x46
+		reg = 0x80;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_EN_CTL_REG(the_hap->base), reg);
+		//0x70
+		reg = 0x80;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_PLAY_REG(the_hap->base), reg);
+
+		msleep(20);
+
+		//0xD0
+		reg = 0xA5;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_SEC_ACCESS_REG(the_hap->base), reg);
+		//0xE3
+		reg = 0x80;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_TEST2_REG(the_hap->base), reg);
+		if (ret < 0)
+			return ret;
+	} else {
+		//0x70
+		reg = 0x00;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_PLAY_REG(the_hap->base), reg);
+		//0x46
+		reg = 0x00;
+		ret = qpnp_hap_write_reg(the_hap, QPNP_HAP_EN_CTL_REG(the_hap->base), reg);
+		if (ret < 0)
+			return ret;
+	}
+	pr_debug("end. ret=0x%x\n", ret);
+	return ret;
+}
+
+static int vibrator_test_set_voltage(u8 *data)
+{
+	int ret = 0;
+	int volt_mv=0;
+	vib_test_set_voltage_req_data *req_data =
+	(vib_test_set_voltage_req_data *)data;
+	vib_test_rsp_data *rsp_data = (vib_test_rsp_data *)data;
+	s16 status = VIB_TEST_STATUS_SUCCESS;
+
+	pr_debug("called.\n");
+
+	volt_mv = req_data->voltage;
+
+	if (volt_mv) {
+		if ((volt_mv < QPNP_HAP_VMAX_MIN_MV) ||
+			(volt_mv > QPNP_HAP_VMAX_MAX_MV)) {
+			pr_err("Invalid voltage\n");
+			status = VIB_TEST_STATUS_FAIL;
+		}
+	}
+
+	if (status == VIB_TEST_STATUS_SUCCESS) {
+		ret = vibrator_test_set(volt_mv);
+	}
+
+	if (ret < 0) {
+		pr_err("vibrator_test_set error.ret=%d\n", ret);
+		status = VIB_TEST_STATUS_FAIL;
+	}
+
+	memset(rsp_data, 0x00, sizeof(vib_test_rsp_data));
+	rsp_data->status = (u32)status;
+
+	pr_debug("end. ret=%d\n", ret);
+	return ret;
+}
+
+static int vibrator_test_read_register(u8 *data)
+{
+	vib_test_set_rdwr_reg_req_data *req_data = (vib_test_set_rdwr_reg_req_data *)data;
+	vib_test_rsp_rdwr_reg_data *rsp_data = (vib_test_rsp_rdwr_reg_data *)data;
+
+	VIB_GET_REG(req_data->reg, req_data->data);
+
+	pr_debug("read. reg=0x%x data=0x%x\n", req_data->reg, req_data->data);
+
+	rsp_data->reserved = 0;
+	rsp_data->data[0] = req_data->reg;
+	rsp_data->data[1] = req_data->data;
+
+	return 0;
+}
+
+static int vibrator_test_write_register(u8 *data)
+{
+	vib_test_set_rdwr_reg_req_data *req_data = (vib_test_set_rdwr_reg_req_data *)data;
+	vib_test_rsp_rdwr_reg_data *rsp_data = (vib_test_rsp_rdwr_reg_data *)data;
+
+	pr_debug("write. reg=0x%x data=0x%x\n", req_data->reg, req_data->data);
+
+	VIB_SET_REG(req_data->reg, req_data->data);
+
+	rsp_data->reserved = 0;
+	return 0;
+}
+
+static long vibrator_test_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	int rc = 0;
+	int ret = 0;
+	u64 ret2 = 0;
+	vib_test_param test_param;
+	pr_debug("called. cmd=0x%08X\n", cmd);
+
+	switch (cmd) {
+	case IOCTL_VIB_TEST_CTRL:
+		pr_debug("cmd=IOCTL_VIB_TEST_CTRL\n");
+		ret2 = copy_from_user(&test_param, (void *)arg, sizeof(test_param));
+		pr_debug("copy_from_user() called. ret2=%lu\n", (long unsigned int)ret2);
+		pr_debug("copy_from_user() req_code=0x%04X,data=0x%02X%02X%02X%02X\n",
+			test_param.req_code, test_param.data[0], test_param.data[1], test_param.data[2], test_param.data[3]);
+		if (ret2) {
+			pr_err("copy_from_user() error. ret2=%lu\n", (long unsigned int)ret2);
+			rc = -EINVAL;
+			break;
+		}
+		switch (test_param.req_code) {
+		case VIB_TEST_SET_VOLTAGE:
+			pr_debug("VIB_TEST_SET_VOLTAGE\n");
+			ret = vibrator_test_set_voltage(&test_param.data[0]);
+			if (ret < 0) {
+				pr_err("vibrator_test_set_voltage() error. ret=%d\n", ret);
+			}
+			ret2 = copy_to_user((void *)arg, &test_param, sizeof(vib_test_param));
+			pr_debug("copy_to_user() called. ret2=%lu\n", (long unsigned int)ret2);
+			pr_debug("copy_to_user() req_code=0x%04X,data=0x%02X%02X%02X%02X\n",
+				test_param.req_code, test_param.data[0], test_param.data[1], test_param.data[2], test_param.data[3]);
+			if (ret2) {
+				pr_err("copy_to_user() error. ret2=%lu\n", (long unsigned int)ret2);
+				rc = -EINVAL;
+			}
+			break;
+		case VIB_TEST_RD_REGISTER:
+			pr_debug("VIB_TEST_RD_REGISTER\n");
+			vibrator_test_read_register(&test_param.data[0]);
+			ret2 = copy_to_user((void *)arg, &test_param, sizeof(vib_test_param));
+			if (ret2) {
+				pr_err("VIB_TEST_RD_REGISTER error ret2=%llu\n", ret2);
+				rc = -EINVAL;
+			}
+			break;
+		case VIB_TEST_WR_REGISTER:
+			pr_debug("VIB_TEST_WR_REGISTER\n");
+			vibrator_test_write_register(&test_param.data[0]);
+			ret2 = copy_to_user((void *)arg, &test_param, sizeof(vib_test_param));
+			if (ret2) {
+				pr_err("VIB_TEST_RD_REGISTER error ret2=%llu\n", ret2);
+				rc = -EINVAL;
+			}
+			break;
+		default:
+			pr_err("req_code error. req_code=0x%04X\n", test_param.req_code);
+			rc = -EINVAL;
+			break;
+		}
+		break;
+	default:
+		pr_err("cmd error. cmd=0x%08X\n", cmd);
+		rc = -EINVAL;
+		break;
+	}
+
+	pr_debug("end. rc=%d\n", rc);
+	return rc;
+}
+
+static const struct file_operations vibrator_test_fops = {
+	.owner			= THIS_MODULE,
+	.open			= vibrator_test_open,
+	.release		= vibrator_test_release,
+	.unlocked_ioctl	= vibrator_test_ioctl,
+};
+
+static struct miscdevice vibrator_test_dev = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "kc_vibrator_test",
+	.fops = &vibrator_test_fops,
+};
+
+void vibrator_test_init(void)
+{
+	misc_register(&vibrator_test_dev);
+}
+#endif
+
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+static ssize_t strength_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+
+	return scnprintf(buf, PAGE_SIZE, "%u\n", (unsigned int)vib_strength);
+}
+
+
+static ssize_t strength_store(struct device *dev,
+					 struct device_attribute *attr,
+					 const char *buf, size_t size)
+{
+	int res;
+	unsigned long tmp;
+	enum vib_strength_level vib_level;
+
+	res = kstrtoul(buf, 0, &tmp);
+	if (res < 0)
+		return -1;
+
+	vib_level = (enum vib_strength_level)tmp;
+	if (vib_level < VIB_STRENGTH_MIN)
+		vib_level = VIB_STRENGTH_MIN;
+	if (vib_level > VIB_STRENGTH_MAX)
+		vib_level = VIB_STRENGTH_MAX;
+
+	vib_strength = vib_level;
+
+	pr_debug("receive strength=%u\n", (unsigned int)vib_strength);
+
+	return size;
+}
+
+static DEVICE_ATTR(strength, S_IRUGO | S_IWUSR, strength_show, strength_store);
+#endif
 
 /* suspend routines to turn off haptics */
 #ifdef CONFIG_PM
@@ -2900,25 +3441,7 @@ static int qpnp_hap_parse_dt(struct qpnp_hap *hap)
 		return rc;
 	}
 
-	hap->vtg_min = QPNP_HAP_VMAX_MIN_MV;
-	rc = of_property_read_u32(pdev->dev.of_node, "qcom,vtg-min", &temp);
-	if (!rc) {
-		hap->vtg_min = temp;
-	} else if (rc != -EINVAL) {
-		pr_err("Unable to read vtg_min\n");
-		return rc;
-	}
-
-	hap->vtg_max = QPNP_HAP_VMAX_MAX_MV;
-	rc = of_property_read_u32(pdev->dev.of_node, "qcom,vtg-max", &temp);
-	if (!rc) {
-		hap->vtg_max = temp;
-	} else if (rc != -EINVAL) {
-		pr_err("Unable to read vtg_max\n");
-		return rc;
-	}
-
-	hap->vmax_mv = hap->vtg_max;
+	hap->vmax_mv = QPNP_HAP_VMAX_MAX_MV;
 	rc = of_property_read_u32(pdev->dev.of_node, "qcom,vmax-mv", &temp);
 	if (!rc) {
 		hap->vmax_mv = temp;
@@ -2926,14 +3449,6 @@ static int qpnp_hap_parse_dt(struct qpnp_hap *hap)
 		pr_err("Unable to read vmax\n");
 		return rc;
 	}
-
-	if (hap->vmax_mv < hap->vtg_min) {
-		hap->vmax_mv = hap->vtg_min;
-	} else if (hap->vmax_mv > hap->vtg_max) {
-		hap->vmax_mv = hap->vtg_max;
-	}
-
-	hap->vtg_default = hap->vmax_mv;
 
 	hap->ilim_ma = QPNP_HAP_ILIM_MIN_MV;
 	rc = of_property_read_u32(pdev->dev.of_node, "qcom,ilim-ma", &temp);
@@ -3032,6 +3547,85 @@ static int qpnp_hap_parse_dt(struct qpnp_hap *hap)
 
 	hap->auto_mode = of_property_read_bool(pdev->dev.of_node,
 				"qcom,lra-auto-mode");
+
+	hap->haptics_vmax_cfg_max = QPNP_HAP_VMAX_CFG_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-vmax-cfg-max", &temp);
+	if(!rc){
+		hap->haptics_vmax_cfg_max = temp;
+	}
+
+	hap->haptics_vmax_cfg_med = QPNP_HAP_VMAX_CFG_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-vmax-cfg-med", &temp);
+	if(!rc){
+		hap->haptics_vmax_cfg_med = temp;
+	}
+
+	hap->haptics_vmax_cfg_min = QPNP_HAP_VMAX_CFG_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-vmax-cfg-min", &temp);
+	if(!rc){
+		hap->haptics_vmax_cfg_min = temp;
+	}
+
+	hap->haptics_rate_cfg1 = QPNP_HAP_CFG1_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-rate-cfg1", &temp);
+	if(!rc){
+		hap->haptics_rate_cfg1 = temp;
+	}
+
+	hap->haptics_rate_cfg2 = QPNP_HAP_CFG2_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-rate-cfg2", &temp);
+	if(!rc){
+		hap->haptics_rate_cfg2 = temp;
+	}
+
+	hap->haptics_cfg1 = QPNP_HAP_CFG1_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-cfg1", &temp);
+	if(!rc){
+		hap->haptics_cfg1 = temp;
+	}
+
+	hap->haptics_cfg2 = QPNP_HAP_CFG2_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-cfg2", &temp);
+	if(!rc){
+		hap->haptics_cfg2 = temp;
+	}
+
+	hap->haptics_sel = QPNP_HAP_SEL_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-sel", &temp);
+	if(!rc){
+		hap->haptics_sel = temp;
+	}
+
+	hap->haptics_brake = QPNP_HAP_BREAK_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-brake", &temp);
+	if(!rc){
+		hap->haptics_brake = temp;
+	}
+
+	hap->haptics_en_ctl2 = QPNP_HAP_EN_CTL2_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-en-ctl2", &temp);
+	if(!rc){
+		hap->haptics_en_ctl2 = temp;
+	}
+
+	hap->haptics_auto_res_ctrl = QPNP_HAP_AUTO_RES_CTRL_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-auto-res-ctrl", &temp);
+	if(!rc){
+		hap->haptics_auto_res_ctrl = temp;
+	}
+
+	hap->haptics_auto_res_cfg = QPNP_HAP_AUTO_RES_CFG_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-auto-res-cfg", &temp);
+	if(!rc){
+		hap->haptics_auto_res_cfg = temp;
+	}
+
+	hap->haptics_zx_cfg = QPNP_HAP_ZX_CFG_DEFAULT;
+	rc = of_property_read_u32(pdev->dev.of_node,"qcom,haptics-zx-cfg", &temp);
+	if(!rc){
+		hap->haptics_zx_cfg = temp;
+	}
+
 	return 0;
 }
 
@@ -3073,7 +3667,6 @@ static int qpnp_haptic_probe(struct platform_device *pdev)
 	hap = devm_kzalloc(&pdev->dev, sizeof(*hap), GFP_KERNEL);
 	if (!hap)
 		return -ENOMEM;
-
 	hap->regmap = dev_get_regmap(pdev->dev.parent, NULL);
 	if (!hap->regmap) {
 		pr_err("Couldn't get parent's regmap\n");
@@ -3113,11 +3706,9 @@ static int qpnp_haptic_probe(struct platform_device *pdev)
 
 	mutex_init(&hap->lock);
 	mutex_init(&hap->wf_lock);
-	spin_lock_init(&hap->td_lock);
 	INIT_WORK(&hap->work, qpnp_hap_worker);
 	INIT_DELAYED_WORK(&hap->sc_work, qpnp_handle_sc_irq);
 	init_completion(&hap->completion);
-	INIT_WORK(&hap->td_work, qpnp_timed_enable_worker);
 
 	hrtimer_init(&hap->hap_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	hap->hap_timer.function = qpnp_hap_timer;
@@ -3158,8 +3749,20 @@ static int qpnp_haptic_probe(struct platform_device *pdev)
 		hap->vcc_pon = vcc_pon;
 	}
 
+#ifndef QUALCOMM_ORIGINAL_FEATURE
+	rc = device_create_file(hap->timed_dev.dev, &dev_attr_strength);
+	if (rc < 0)
+	{
+		pr_err("device_create_file() ERROR rc=%d\n", rc);
+		goto sysfs_fail;
+	}
+#endif
+
 	ghap = hap;
 
+#ifdef VIB_TEST
+	the_hap = hap;
+#endif
 	return 0;
 
 sysfs_fail:
@@ -3215,6 +3818,9 @@ static struct platform_driver qpnp_haptic_driver = {
 
 static int __init qpnp_haptic_init(void)
 {
+#ifdef VIB_TEST
+	vibrator_test_init();
+#endif
 	return platform_driver_register(&qpnp_haptic_driver);
 }
 module_init(qpnp_haptic_init);
