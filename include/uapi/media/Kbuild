@@ -3,3 +3,4 @@
 header-y += radio-iris.h
 header-y += radio-iris-commands.h
 header-y += synx.h
+header-y += msm_cam_sensor_kc.h

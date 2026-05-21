@@ -3,6 +3,7 @@
 
 #include <linux/v4l2-mediabus.h>
 #include <media/msm_camsensor_sdk-legacy.h>
+#include <media/msm_cam_sensor_kc.h>
 
 #include <linux/types.h>
 #include <linux/i2c.h>

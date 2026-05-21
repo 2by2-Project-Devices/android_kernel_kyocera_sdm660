@@ -18,6 +18,8 @@
 #include "msm_sensor.h"
 #include "msm_sd.h"
 
+#include "msm_sensor_init_kc.h"
+
 /* Logging macro */
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
@@ -66,6 +68,10 @@ static int32_t msm_sensor_driver_cmd(struct msm_sensor_init_t *s_init,
 	if (!s_init || !cfg) {
 		pr_err("failed: s_init %pK cfg %pK", s_init, cfg);
 		return -EINVAL;
+	}
+
+	if (cfg->cfgtype == CFG_SINIT_CONFIG_XML_NAME) {
+		return msm_sensor_config_xml_name_kc(cfg->cfg.setting);
 	}
 
 	switch (cfg->cfgtype) {
