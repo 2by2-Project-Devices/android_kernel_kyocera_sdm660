@@ -22,6 +22,7 @@
 #include <linux/ioctl.h>
 #include <linux/media.h>
 #include <linux/slab.h>
+#include <linux/string.h>
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/usb.h>
@@ -42,6 +43,13 @@
 #define MEDIA_ENT_SUBTYPE_MASK			0x0000ffff
 #define MEDIA_ENT_T_DEVNODE_UNKNOWN		(MEDIA_ENT_F_OLD_BASE | \
 						 MEDIA_ENT_SUBTYPE_MASK)
+#define MEDIA_ENT_T_DEVNODE_V4L		MEDIA_ENT_F_IO_V4L
+#define MEDIA_ENT_T_V4L2_SUBDEV		MEDIA_ENT_F_V4L2_SUBDEV_UNKNOWN
+
+#define MSM_CAMERA_NAME			"msm_camera"
+#define MSM_CONFIGURATION_NAME		"msm_config"
+#define MSM_CAMERA_SUBDEV_MAX		21
+#define QCAMERA_VNODE_GROUP_ID		2
 
 /* -----------------------------------------------------------------------------
  * Userspace API
@@ -102,6 +110,32 @@ static struct media_entity *find_entity(struct media_device *mdev, u32 id)
 	return NULL;
 }
 
+static bool media_device_is_msm_camera(const struct media_device *mdev)
+{
+	return !strcmp(mdev->model, MSM_CAMERA_NAME) ||
+		!strcmp(mdev->model, MSM_CONFIGURATION_NAME);
+}
+
+static void media_device_enum_msm_camera_legacy(struct media_device *mdev,
+	struct media_entity *ent, struct media_entity_desc *entd)
+{
+	if (!media_device_is_msm_camera(mdev))
+		return;
+
+	if (is_media_entity_v4l2_subdev(ent) &&
+	    ent->function <= MSM_CAMERA_SUBDEV_MAX) {
+		entd->type = MEDIA_ENT_T_V4L2_SUBDEV;
+		entd->group_id = ent->function;
+		return;
+	}
+
+	if (ent->function == QCAMERA_VNODE_GROUP_ID ||
+	    ent->function == MEDIA_ENT_F_IO_V4L) {
+		entd->type = MEDIA_ENT_T_DEVNODE_V4L;
+		entd->group_id = QCAMERA_VNODE_GROUP_ID;
+	}
+}
+
 static long media_device_enum_entities(struct media_device *mdev, void *arg)
 {
 	struct media_entity_desc *entd = arg;
@@ -141,6 +175,8 @@ static long media_device_enum_entities(struct media_device *mdev, void *arg)
 		else if (ent->function != MEDIA_ENT_F_IO_V4L)
 			entd->type = MEDIA_ENT_T_DEVNODE_UNKNOWN;
 	}
+
+	media_device_enum_msm_camera_legacy(mdev, ent, entd);
 
 	memcpy(&entd->raw, &ent->info, sizeof(ent->info));
 
