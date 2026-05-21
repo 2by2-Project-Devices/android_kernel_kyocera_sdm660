@@ -633,8 +633,7 @@ struct msm_vfe_hardware_info vfe48_hw_info = {
 			.get_clk_rates = msm_vfe48_get_clk_rates,
 			.set_dual_vfe_mode = msm_vfe48_set_dual_vfe_mode,
 			.clear_dual_vfe_mode = msm_vfe48_clear_dual_vfe_mode,
-			.get_dual_sync_platform_data =
-				msm_vfe48_get_dual_sync_platform_data,
+			.get_dual_sync_platform_data = NULL,
 		},
 	},
 	.dmi_reg_offset = 0xC2C,
