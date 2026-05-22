@@ -952,7 +952,7 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 	CDBG("%s qcom,eeprom-name %s, rc %d\n", __func__,
 		eb_info->eeprom_name, rc);
 	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
+		CDBG("%s userspace eeprom probe\n", __func__);
 		e_ctrl->userspace_probe = 1;
 	}
 
@@ -1785,7 +1785,7 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	CDBG("%s qcom,eeprom-name %s, rc %d\n", __func__,
 		eb_info->eeprom_name, rc);
 	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
+		CDBG("%s userspace eeprom probe\n", __func__);
 		e_ctrl->userspace_probe = 1;
 	}
 

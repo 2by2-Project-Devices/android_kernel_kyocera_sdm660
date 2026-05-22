@@ -220,14 +220,15 @@ static int32_t msm_sensor_fill_eeprom_subdevid_by_name(
 			pr_err("%s:%d Eeprom userspace probe for %s\n",
 				__func__, __LINE__,
 				s_ctrl->sensordata->eeprom_name);
-			of_node_put(src_node);
 			userspace_probe = 1;
-			if (count > 1)
+			if (count > 1) {
+				of_node_put(src_node);
 				return -EINVAL;
+			}
 		}
 		if (!userspace_probe &&
 			strcmp(eeprom_name, s_ctrl->sensordata->eeprom_name))
-			continue;
+			goto next;
 
 		rc = of_property_read_u32(src_node, "cell-index", &val);
 		if (rc < 0) {
@@ -245,6 +246,9 @@ static int32_t msm_sensor_fill_eeprom_subdevid_by_name(
 		of_node_put(src_node);
 		src_node = NULL;
 		break;
+next:
+		of_node_put(src_node);
+		src_node = NULL;
 	}
 
 	return rc;
