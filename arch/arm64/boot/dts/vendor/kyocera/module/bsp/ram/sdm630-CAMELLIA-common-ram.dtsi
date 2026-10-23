@@ -21,3 +21,11 @@
 		};
 	};
 };
+
+/*
+ * The bootloader grows cont_splash_mem to 0x2400000, which covers
+ * dfps_data_mem. Don't let the DSI PLL free that page a second time.
+ */
+&mdss_dsi0_pll {
+	/delete-property/ memory-region;
+};
