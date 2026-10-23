@@ -762,7 +762,8 @@ static irqreturn_t wdog_bark_handler(int irq, void *dev_id)
 	if (wdog_dd->do_ipi_ping)
 		dump_cpu_alive_mask(wdog_dd);
 
-	msm_trigger_wdog_bite();
+	/* Go through the panic path so pstore is kept across the reset */
+	panic("Watchdog bark");
 	return IRQ_HANDLED;
 }
 
